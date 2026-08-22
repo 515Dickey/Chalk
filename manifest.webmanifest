@@ -1,0 +1,16 @@
+{
+  "name": "Chalk — Finn's Playbook",
+  "short_name": "Chalk",
+  "description": "Finn's 5th grade football playbook. Every play drawn on a field, with every player's job.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0E1416",
+  "theme_color": "#0E1416",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

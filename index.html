@@ -1,0 +1,1686 @@
+<title>Chalk</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Finn's 5th grade football playbook. Every play drawn on a field, with every player's job.">
+<meta name="theme-color" content="#0E1416">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chalk">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    /* Sideline chrome */
+    --ink:        #0E1416;
+    --panel:      #172023;
+    --panel-2:    #1E292C;
+    --line:       #2B393D;
+    --text:       #E6EDE9;
+    --text-dim:   #93A5A0;
+    --text-faint: #647773;
+
+    /* Turf */
+    --turf:       #2C6B41;
+    --turf-alt:   #27603A;
+    --turf-edge:  #1C4A2C;
+
+    /* The four inks */
+    --chalk:      #F4F7F2;   /* blocks + routes */
+    --ball:       #FFB020;   /* the football */
+    --motion:     #8FC5DC;   /* pre-snap motion */
+    --defense:    #93A5A0;   /* the other team */
+
+    --radius: 10px;
+    --rail: 264px;
+  }
+
+  * { box-sizing: border-box; }
+  /* an author `display` beats the UA rule behind [hidden], so say it out loud */
+  [hidden] { display: none !important; }
+
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--ball); outline-offset: 2px; border-radius: 4px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* ---------- shell ---------- */
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+
+  header.top {
+    display: flex; align-items: baseline; gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .wordmark {
+    font-family: Anton, "Arial Narrow", sans-serif;
+    font-size: 26px; letter-spacing: .05em; line-height: 1;
+    text-transform: uppercase; color: var(--chalk);
+  }
+  .wordmark .dot { color: var(--ball); }
+  .tagline { color: var(--text-dim); font-size: 13.5px; }
+  .top .spacer { flex: 1; }
+
+  .body { display: flex; align-items: stretch; flex: 1; min-height: 0; }
+
+  /* ---------- rail ---------- */
+  .rail {
+    width: var(--rail); flex: none;
+    border-right: 1px solid var(--line);
+    background: var(--panel);
+    padding: 16px 0 40px;
+    overflow-y: auto;
+  }
+  .rail section { padding: 0 14px; }
+  .rail h2 { margin: 0 0 8px; }
+
+  .whoami { padding-bottom: 16px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px; font-weight: 600; letter-spacing: .04em;
+    padding: 6px 9px; border-radius: 6px;
+    background: var(--panel-2); color: var(--text-dim);
+    border: 1px solid var(--line);
+  }
+  .chip:hover { color: var(--text); border-color: #3C4E52; }
+  .chip[aria-pressed="true"] {
+    background: var(--ball); border-color: var(--ball); color: #1A1204;
+  }
+
+  .group { margin-bottom: 18px; }
+  .group > h2 { padding-left: 2px; }
+  .playlist { display: flex; flex-direction: column; gap: 2px; }
+  .playbtn {
+    display: flex; align-items: center; gap: 9px;
+    text-align: left; width: 100%;
+    padding: 8px 10px; border-radius: 7px;
+    color: var(--text-dim);
+    border: 1px solid transparent;
+  }
+  .playbtn:hover { background: var(--panel-2); color: var(--text); }
+  .playbtn[aria-current="true"] {
+    background: var(--panel-2); color: var(--text);
+    border-color: #3E5A48;
+    box-shadow: inset 3px 0 0 var(--ball);
+  }
+  .playbtn .num {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; color: var(--text-faint); flex: none; width: 16px;
+  }
+  .playbtn[aria-current="true"] .num { color: var(--ball); }
+  .playbtn .nm { font-weight: 500; }
+
+  /* ---------- main ---------- */
+  main { flex: 1; min-width: 0; padding: 18px 22px 56px; }
+  .stage { max-width: 1080px; margin: 0 auto; }
+
+  .fieldwrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--turf-edge);
+    background: var(--turf);
+  }
+  svg.field { display: block; width: 100%; height: auto; }
+
+  .playhead {
+    display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap;
+    margin: 16px 0 0;
+  }
+  .playhead .title {
+    font-family: Anton, "Arial Narrow", sans-serif;
+    font-size: clamp(26px, 4.6vw, 40px); line-height: .98;
+    letter-spacing: .02em; text-transform: uppercase;
+    margin: 0; color: var(--chalk); text-wrap: balance;
+  }
+  .playhead .cat {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ball); padding-bottom: 5px;
+  }
+  .gist { color: var(--text-dim); max-width: 62ch; margin: 8px 0 0; }
+
+  .flag {
+    display: flex; gap: 9px; align-items: flex-start;
+    margin: 12px 0 0; padding: 10px 12px;
+    background: rgba(255,176,32,.07);
+    border: 1px solid rgba(255,176,32,.28);
+    border-radius: 8px;
+    font-size: 13.5px; color: #E8D5AE; max-width: 70ch;
+  }
+  .flag b { color: var(--ball); font-weight: 600; }
+
+  .controls { display: flex; gap: 8px; margin: 16px 0 0; flex-wrap: wrap; }
+  .btn {
+    padding: 9px 16px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel-2);
+    color: var(--text); font-weight: 500;
+  }
+  .btn:hover { border-color: #47605A; }
+  .btn.primary {
+    background: var(--ball); border-color: var(--ball); color: #1A1204; font-weight: 600;
+  }
+  .btn.primary:hover { background: #FFC04A; border-color: #FFC04A; }
+  .btn[disabled] { opacity: .45; cursor: default; }
+
+  /* ---------- jobs ---------- */
+  .jobs { margin: 26px 0 0; }
+  .jobs h2 { margin: 0 0 10px; }
+  .joblist { display: grid; gap: 4px; }
+  .job {
+    display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: start;
+    width: 100%; text-align: left;
+    padding: 10px 12px; border-radius: 8px;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+  }
+  .job:hover { background: var(--panel); color: var(--text); }
+  .job[aria-pressed="true"] {
+    background: var(--panel); border-color: #3E5A48; color: var(--text);
+  }
+  .job .tag {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px; font-weight: 600; letter-spacing: .03em;
+    color: var(--chalk); padding-top: 1px;
+  }
+  .job[data-ball="1"] .tag { color: var(--ball); }
+  .job .txt { font-size: 14.5px; }
+  .job .role {
+    display: inline-block;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-faint); margin-right: 8px;
+  }
+  .job[data-ball="1"] .role { color: var(--ball); }
+
+  /* ---------- editor ---------- */
+  .editor { margin: 24px 0 0; display: grid; gap: 16px; }
+
+  .edgrid {
+    display: grid; gap: 12px 16px;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    align-items: end;
+  }
+  .edfield { display: grid; gap: 5px; }
+  .edfield.wide, .edgrid > .wide { grid-column: 1 / -1; }
+
+  .editor input[type="text"], .editor textarea {
+    width: 100%; padding: 9px 11px; border-radius: 8px;
+    background: var(--ink); color: var(--text);
+    border: 1px solid var(--line);
+    font: inherit; font-size: 14.5px; resize: vertical;
+  }
+  .editor textarea.json {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px; line-height: 1.45; color: var(--text-dim);
+  }
+  .editor input[type="text"]:focus, .editor textarea:focus {
+    outline: none; border-color: var(--ball);
+  }
+
+  .edbox {
+    display: grid; gap: 14px;
+    padding: 16px; border-radius: var(--radius);
+    background: var(--panel); border: 1px solid var(--line);
+  }
+  .edtitle {
+    font-family: Anton, "Arial Narrow", sans-serif;
+    font-size: 20px; letter-spacing: .03em; text-transform: uppercase;
+    color: var(--chalk);
+  }
+  .edtypes { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+  .edtypes .btn { padding: 7px 13px; font-size: 14px; }
+  .edtypes .chip { padding: 8px 13px; font-family: inherit; font-size: 14px; letter-spacing: 0; }
+
+  .edcheck {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 14.5px; color: var(--text-dim); padding-bottom: 9px;
+  }
+  .edcheck input { width: 18px; height: 18px; accent-color: var(--ball); }
+
+  .edhint { margin: 0; color: var(--text-faint); font-size: 13.5px; max-width: 68ch; }
+  .edhint.drawing { color: var(--ball); }
+
+  .edacts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn.danger { border-color: #5A3232; color: #E0A8A0; }
+  .btn.danger:hover { border-color: #7C4444; background: #241A1A; }
+
+  .backup { border-top: 1px solid var(--line); padding-top: 14px; }
+  .backup summary {
+    cursor: pointer; color: var(--text-dim); font-size: 14px;
+    list-style: none; display: flex; align-items: center; gap: 7px;
+  }
+  .backup summary::before { content: "▸"; color: var(--text-faint); }
+  .backup[open] summary::before { content: "▾"; }
+  .backup summary::-webkit-details-marker { display: none; }
+  .backup > *:not(summary) { margin-top: 12px; }
+
+  .flag.ok {
+    background: rgba(143, 197, 220, .07);
+    border-color: rgba(143, 197, 220, .3);
+    color: #C6DEE8;
+  }
+  .flag.ok b { color: var(--motion); }
+
+  /* dragging affordances, edit mode only */
+  .grabbable { cursor: grab; }
+  body.editing .oPlayer, body.editing .grabbable { touch-action: none; }
+  body.editing svg.field { touch-action: none; }
+  .grip { cursor: grab; }
+
+  /* ---------- key ---------- */
+  .key {
+    margin: 30px 0 0; padding-top: 18px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 18px 26px; align-items: center;
+  }
+  .keyitem { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-dim); }
+  .keyitem svg { flex: none; }
+
+  /* ---------- field glyph styling ---------- */
+  .oPlayer, .xPlayer { cursor: pointer; }
+  .dimmed { opacity: .24; transition: opacity .25s ease; }
+  .undimmed { opacity: 1; transition: opacity .25s ease; }
+  /* wherever the ball goes stays readable, even when you've picked yourself */
+  .dimmed.ballink { opacity: .62; }
+
+  @media (max-width: 900px) {
+    .body { flex-direction: column; }
+    .rail {
+      width: 100%; border-right: none; border-bottom: 1px solid var(--line);
+      padding: 14px 0 16px; max-height: none;
+    }
+    .rail .groups {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 14px;
+    }
+    .rail .group { margin-bottom: 0; }
+    .rail .playbtn { padding: 6px 8px; font-size: 14px; }
+    main { padding: 16px 14px 48px; }
+  }
+
+  @media (max-width: 600px) {
+    .rail .groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .playhead { align-items: baseline; gap: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="wordmark">Chalk<span class="dot">.</span></div>
+    <div class="tagline">Finn&rsquo;s 5th grade playbook</div>
+    <div class="spacer"></div>
+    <button class="btn" id="modeBtn" type="button">Edit plays</button>
+  </header>
+  <datalist id="groupList">
+    <option value="Pass Plays"></option>
+    <option value="QB Run"></option>
+    <option value="Motion"></option>
+    <option value="Power Run"></option>
+  </datalist>
+
+  <div class="body">
+    <nav class="rail" aria-label="Plays">
+      <section class="whoami">
+        <h2 class="eyebrow">Which one are you?</h2>
+        <div class="chips" id="chips"></div>
+      </section>
+      <section class="groups" id="groups"></section>
+    </nav>
+
+    <main>
+      <div class="stage">
+        <div class="fieldwrap">
+          <svg class="field" id="field" viewBox="0 44 1000 470" role="img" aria-label="Play diagram"></svg>
+        </div>
+
+        <div class="playhead">
+          <h1 class="title" id="playTitle">&nbsp;</h1>
+          <div class="cat" id="playCat"></div>
+        </div>
+        <p class="gist" id="playGist"></p>
+        <div id="playFlag"></div>
+
+        <div class="controls">
+          <button class="btn primary" id="runBtn">Run it</button>
+          <button class="btn" id="resetBtn">Line up again</button>
+        </div>
+
+        <section class="editor" id="editor" hidden></section>
+
+        <section class="jobs">
+          <h2 class="eyebrow" id="jobsHead">Everybody&rsquo;s job</h2>
+          <div class="joblist" id="joblist"></div>
+        </section>
+
+        <div class="key">
+          <div class="keyitem">
+            <svg width="46" height="16" aria-hidden="true"><line x1="2" y1="8" x2="34" y2="8" stroke="#F4F7F2" stroke-width="4" stroke-linecap="round"/><line x1="36" y1="2" x2="36" y2="14" stroke="#F4F7F2" stroke-width="4" stroke-linecap="round"/></svg>
+            Block him
+          </div>
+          <div class="keyitem">
+            <svg width="46" height="16" aria-hidden="true"><line x1="2" y1="8" x2="30" y2="8" stroke="#F4F7F2" stroke-width="4" stroke-linecap="round"/><path d="M28,2 L42,8 L28,14 Z" fill="#F4F7F2"/></svg>
+            Run there
+          </div>
+          <div class="keyitem">
+            <svg width="46" height="16" aria-hidden="true"><line x1="2" y1="8" x2="30" y2="8" stroke="#FFB020" stroke-width="5" stroke-linecap="round"/><path d="M27,1 L43,8 L27,15 Z" fill="#FFB020"/></svg>
+            The football
+          </div>
+          <div class="keyitem">
+            <svg width="46" height="16" aria-hidden="true"><line x1="2" y1="8" x2="34" y2="8" stroke="#8FC5DC" stroke-width="4" stroke-linecap="round" stroke-dasharray="7 6"/><path d="M32,3 L43,8 L32,13 Z" fill="#8FC5DC"/></svg>
+            Move before the snap
+          </div>
+          <div class="keyitem">
+            <svg width="46" height="16" aria-hidden="true"><line x1="2" y1="8" x2="31" y2="8" stroke="#FFB020" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="1.5 9"/><path d="M30,3 L42,8 L30,13 Z" fill="#FFB020"/></svg>
+            The throw
+          </div>
+          <div class="keyitem">
+            <svg width="26" height="18" aria-hidden="true"><circle cx="13" cy="9" r="7" fill="none" stroke="#F4F7F2" stroke-width="3"/></svg>
+            Us
+          </div>
+          <div class="keyitem">
+            <svg width="26" height="18" aria-hidden="true"><line x1="7" y1="3" x2="19" y2="15" stroke="#93A5A0" stroke-width="3.4" stroke-linecap="round"/><line x1="19" y1="3" x2="7" y2="15" stroke="#93A5A0" stroke-width="3.4" stroke-linecap="round"/></svg>
+            Them
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   THE PLAYS
+   Read off the coach's sheet: 4 columns x 4 rows, 8-man football.
+   Field coords: 1000 x 640. Line of scrimmage y = 300.
+   Downfield is UP (smaller y). We attack toward the top.
+   ============================================================ */
+
+const POS_NAMES = {
+  LE: "Left End",  LG: "Left Guard", C: "Center",    RG: "Right Guard",
+  RE: "Right End", QB: "Quarterback", LH: "Left Half", RH: "Right Half"
+};
+const posName = c => POS_NAMES[c] || c;
+
+/* Positions come from the plays themselves, so a position you add in the
+   editor turns up in "which one are you?" like any other. */
+function allPositions() {
+  const order = Object.keys(POS_NAMES), seen = [];
+  PLAYS.forEach(p => p.men.forEach(m => { if (!seen.includes(m.p)) seen.push(m.p); }));
+  return seen.sort((a, b) => {
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+  });
+}
+
+/* What we actually see: two down linemen head-up on our guards, three
+   linebackers, two corners and a safety. The centre is uncovered, which is
+   why he climbs to the Mike on almost every play. */
+const DEFENSE = [
+  { id:"T1", x: 430, y: 238 },   // down lineman over the left guard
+  { id:"T2", x: 570, y: 238 },   // down lineman over the right guard
+  { id:"W",  x: 368, y: 172 },   // linebacker, our left
+  { id:"M",  x: 500, y: 168 },   // middle linebacker
+  { id:"S",  x: 632, y: 172 },   // linebacker, our right
+  { id:"CL", x: 158, y: 224 },   // corner over the left end
+  { id:"CR", x: 842, y: 224 },   // corner over the right end
+  { id:"FS", x: 500, y:  84 }    // safety
+];
+/* A block ends ON the man it is blocking. Give an assignment `on:"S"` and the
+   line is re-aimed at that defender, so dragging that defender moves the block.
+   Draw a line by hand and the `on` is dropped — what you drew is what you get. */
+function resolvePath(m, play) {
+  if (!m.path) return null;
+  const def = (play && play.def) || DEFENSE;
+  const d = m.on ? def.find(x => x.id === m.on) : null;
+  if (!d) return m.path;
+  const pts = m.path.map(p => p.slice());
+  const prev = pts[pts.length - 2];
+  const dx = d.x - prev[0], dy = d.y - prev[1];
+  const L = Math.hypot(dx, dy) || 1;
+  const stop = 20;                    // stop at his near shoulder, not through him
+  pts[pts.length - 1] = [Math.round(d.x - dx / L * stop), Math.round(d.y - dy / L * stop)];
+  return pts;
+}
+
+/* k: block | route | carry | hand | fake | none
+   path: solid line.  motion: dashed pre-snap line.
+   on:  which defender a block is aimed at (see DEFENSE ids). */
+const BUILTIN = [
+/* ---------------- PASS PLAYS ---------------- */
+{
+  id: "p1", group: "Pass Plays", name: "Go Right", n: 1,
+  gist: "Both halfbacks slide out flat as safe throws. The right end runs straight up the field — he is the one you are really throwing to.",
+  men: [
+    { p:"LE", x:150, y:300, k:"none", job:"The sheet is cut off right here. Ask Coach what the left end does on this one." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Pass block the down lineman over you. Stay in front of him and do not let him get past you." },
+    { p:"C",  x:500, y:300, k:"block", path:[[500,300],[500,276]], job:"Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Pass block the down lineman over you. Protect the quarterback's right side." },
+    { p:"RE", x:860, y:300, k:"route", ball:true, path:[[860,300],[858,130]], job:"Sprint straight up the field as fast as you can. The ball is coming to you — look back over your inside shoulder." },
+    { p:"LH", x:430, y:400, k:"route", path:[[430,400],[300,392],[192,372]], job:"Run flat toward the left sideline, then turn and look for the ball. You are the safe throw." },
+    { p:"RH", x:570, y:400, k:"route", path:[[570,400],[700,392],[792,366]], job:"Run flat toward the right sideline, then turn and look. You are the safe throw." },
+    { p:"QB", x:500, y:400, k:"hand", path:[[500,400],[500,452]], job:"Take the snap and drop back three steps. Look deep right first. If he is covered, dump it to a halfback in the flat." }
+  ],
+  pass: [[500,448],[700,300],[858,150]]
+},
+{
+  id: "p2", group: "Pass Plays", name: "Seam", n: 2,
+  gist: "The right end splits the middle of the field. Everybody else pulls a defender away from him.",
+  men: [
+    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[150,218],[268,214]], job:"Run up about ten steps, then break in toward the middle of the field." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Pass block the down lineman over you. Do not let him get past you." },
+    { p:"C",  x:500, y:300, k:"block", path:[[500,300],[500,276]], job:"Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Pass block the down lineman over you. Protect the quarterback's right side." },
+    { p:"RE", x:680, y:300, k:"route", ball:true, path:[[680,300],[672,212],[640,132]], job:"Run straight up the seam — the open grass between the linebacker and the safety. Ball is coming to you." },
+    { p:"RH", x:870, y:300, k:"route", path:[[870,300],[868,196],[812,192]], job:"Run up, then come back in. Pull the corner away from the seam." },
+    { p:"LH", x:790, y:352, k:"route", path:[[790,352],[788,236],[738,222]], job:"Run up the field, then lean in. Clear the linebacker out of the middle." },
+    { p:"QB", x:500, y:406, k:"hand", path:[[500,406],[500,452]], job:"Take the snap, drop back, and hit the right end up the middle before the safety can get over." }
+  ],
+  pass: [[500,448],[600,300],[644,152]]
+},
+{
+  id: "p3", group: "Pass Plays", name: "Crossers", n: 3,
+  gist: "Both ends run up the field and then angle in toward the middle, crossing behind the linebackers.",
+  men: [
+    { p:"LE", x:150, y:316, k:"route", ball:true, path:[[150,316],[156,206],[292,148]], job:"Run up the field, then angle in toward the middle. Keep running — the ball is coming to you across the field." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Pass block the down lineman over you. Stay in front of him." },
+    { p:"C",  x:500, y:300, k:"block", path:[[500,300],[500,276]], job:"Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Pass block the down lineman over you. Protect the right side." },
+    { p:"RH", x:700, y:300, k:"route", path:[[700,300],[700,190],[566,140]], job:"Run up the field, then angle in toward the middle. You cross behind the other end." },
+    { p:"RE", x:870, y:300, k:"route", path:[[870,300],[868,152]], job:"Straight up the sideline. Take the deep man with you and get him out of the way." },
+    { p:"LH", x:430, y:404, k:"block", path:[[430,404],[400,352]], job:"Stay in and block. Anybody who comes free is yours." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[500,452]], job:"Drop back and count one, two. Throw to whichever crosser comes open first." }
+  ],
+  pass: [[500,448],[380,280],[296,164]]
+},
+{
+  id: "p4", group: "Pass Plays", name: "Double In", n: 4,
+  gist: "Both ends run up and break in. Both halfbacks run straight up the seams to clear the middle out for them.",
+  men: [
+    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[150,204],[302,198]], job:"Run up about eight steps, then break hard to your right, toward the middle." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Pass block the down lineman over you. Do not let him past you." },
+    { p:"C",  x:500, y:300, k:"block", path:[[500,300],[500,276]], job:"Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Pass block the down lineman over you. Protect the right side." },
+    { p:"RE", x:860, y:300, k:"route", ball:true, path:[[860,300],[860,204],[706,198]], job:"Run up about eight steps, then break hard to your left, toward the middle. Look for the ball right away." },
+    { p:"RH", x:730, y:348, k:"route", path:[[730,348],[730,214]], job:"Run straight up the field. Pull the linebacker out of the way." },
+    { p:"LH", x:272, y:348, k:"route", path:[[272,348],[272,214]], job:"Run straight up the field. Pull the linebacker out of the way." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[500,452]], job:"Drop back three steps and throw it to whichever end breaks open first." }
+  ],
+  pass: [[500,448],[660,280],[712,208]]
+},
+
+/* ---------------- QB RUN ---------------- */
+{
+  id: "q1", group: "QB Run", name: "QB Sweep Right", n: 5,
+  gist: "The two players on the right cross: the inside one goes out and kicks the corner toward the sideline, the outside one comes down and hits the linebacker. The quarterback runs through the gap they make.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,258]], job:"Block the corner across from you. Do not let him chase the play from behind." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Move him backward." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it. Nobody is over you, so go straight up to the middle linebacker." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Nobody gets inside of you." },
+    { p:"LH", x:680, y:326, k:"block", on:"CR", path:[[680,326],[800,240]], job:"Run at the corner and drive him toward the sideline. This is the kick-out — it makes the hole." },
+    { p:"RE", x:860, y:300, k:"block", on:"S",  path:[[860,300],[720,220]], job:"Come down inside and block the linebacker. Get your helmet in front of him." },
+    { p:"RH", x:570, y:404, k:"route", path:[[570,404],[646,414],[726,352]], job:"Lead the way. Run through the hole first and hit anybody standing in it." },
+    { p:"QB", x:470, y:404, k:"carry", ball:true, path:[[470,404],[520,452],[646,438],[750,344]], job:"Take the snap and sweep right. Stay behind the right half, get around the kick-out block, then turn up the field." }
+  ]
+},
+{
+  id: "q2", group: "QB Run", name: "QB Dive", n: 6,
+  gist: "Straight up the gut. The guards take the two down linemen, the centre climbs to the middle linebacker, and both halfbacks arc out and block the outside linebackers.",
+  men: [
+    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[244,226]], job:"Release upfield and block the first man you see. Do not stand still." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Drive him backward and seal the gap." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it and go straight to the middle linebacker. He is the one who makes this tackle — get him blocked." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Drive him backward and seal the gap." },
+    { p:"RE", x:860, y:300, k:"route", path:[[860,300],[766,226]], job:"Release upfield and block the first man you see." },
+    { p:"LH", x:430, y:404, k:"block", on:"W", path:[[430,404],[386,346],[376,260]], job:"Arc around to the outside, then come back in and block the linebacker on your side." },
+    { p:"RH", x:570, y:404, k:"block", on:"S", path:[[570,404],[618,346],[630,260]], job:"Arc around to the outside, then come back in and block the linebacker on your side." },
+    { p:"QB", x:500, y:404, k:"carry", ball:true, path:[[500,404],[500,312]], job:"Take the snap and run straight ahead, right behind the center. Get low, hold the ball tight, and fall forward." }
+  ]
+},
+{
+  id: "q3", group: "QB Run", name: "QB Draw", n: 7,
+  gist: "It is supposed to look like a pass. The ends take off deep to pull everybody back, the line sets up like pass protection, then the quarterback runs through the middle.",
+  men: [
+    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[150,162]], job:"Run straight up the field like a pass is coming. Take your man deep and get him out of there." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Set up like pass protection. Let the down lineman come to you, then wall him off to the outside." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it and set like pass protection, then take the middle linebacker. If he runs past you the play is dead." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Set like pass protection, then wall your man to the outside. The hole is right behind you." },
+    { p:"RE", x:860, y:300, k:"route", path:[[860,300],[860,162]], job:"Run straight up the field. Take your man with you." },
+    { p:"LH", x:430, y:404, k:"block", path:[[430,404],[470,348]], job:"Check inside first, then block anybody coming free." },
+    { p:"RH", x:570, y:404, k:"fake", motion:[[570,404],[634,392]], job:"Fake like the ball is coming to you, then block the edge. Sell the fake." },
+    { p:"QB", x:500, y:404, k:"carry", ball:true, path:[[500,404],[500,438],[598,428],[678,336]], job:"Show pass first — hold the ball up. Count one beat, then take off through the gap on the right." }
+  ]
+},
+{
+  id: "q4", group: "QB Run", name: "QB Rollout Right", n: 8,
+  coachLabel: "QR 2PO",
+  gist: "The quarterback rolls out to the right with the option to run it or throw it. Everybody up front blocks in that direction.",
+  men: [
+    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[302,190]], job:"Angle up and across toward the middle. You are the throwback if the roll gets stopped." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Block the down lineman over you and push him toward the sideline." },
+    { p:"C",  x:500, y:300, k:"block", on:"T2", path:[[500,300],[540,272]], job:"Snap it, then help to your right and stay at the line. This can turn into a pass, so do not go downfield." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Block the down lineman over you. Do not let him cross your face." },
+    { p:"RE", x:860, y:300, k:"route", path:[[860,300],[860,176]], job:"Straight up the sideline. Get deep and stay wide." },
+    { p:"RH", x:660, y:330, k:"route", path:[[660,330],[770,258],[848,254]], job:"Run up and out toward the corner. Give the quarterback somewhere to throw it." },
+    { p:"LH", x:430, y:404, k:"block", path:[[430,404],[474,350]], job:"Block anybody chasing from the backside. Nobody catches the quarterback from behind." },
+    { p:"QB", x:500, y:404, k:"carry", ball:true, path:[[500,404],[566,448],[688,438],[792,388]], job:"Roll out to your right. Run it if the edge is open, throw it if the end covers you up. Keep your eyes downfield." }
+  ]
+},
+
+/* ---------------- MOTION ---------------- */
+{
+  id: "m1", group: "Motion", name: "Jet Sweep Left", n: 9,
+  gist: "The right end runs across the formation before the snap and keeps going as a decoy. The ball actually goes to the left half sweeping the same way.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[156,258]], job:"Block the corner across from you and turn him inside. The ball is going outside of you." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Seal him inside." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it. Nobody is over you, so climb to the middle linebacker." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Cut him off — nobody chases from behind." },
+    { p:"RE", x:824, y:322, k:"fake", motion:[[824,322],[640,332],[452,338],[300,340]], job:"Start moving left before the snap and do not stop. You never get the ball — your job is to take defenders with you." },
+    { p:"RH", x:570, y:404, k:"block", on:"W", path:[[570,404],[468,382],[390,320]], job:"Arc around to the left and block the linebacker on that side. Get out there early." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[466,410]], job:"Take the snap and hand it to the left half going left. Then get in the way of anybody chasing." },
+    { p:"LH", x:430, y:404, k:"carry", ball:true, path:[[430,404],[350,418],[240,404],[178,352]], job:"Take the handoff and run left. Get outside the block, then turn up the field. Do not cut back inside." }
+  ]
+},
+{
+  id: "m2", group: "Motion", name: "Jet Sweep Left (Crack)", n: 10,
+  gist: "The same sweep left, but blocked differently: the left end comes down on the linebacker and the right half kicks the outside man out. Run between those two blocks.",
+  flag: "This one and Jet Sweep Left look almost the same on the sheet — the difference is the blocking angle. Worth asking Coach which is which.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"W", path:[[150,300],[268,244]], job:"Come down inside and crack the linebacker. Helmet in front — do not block him in the back." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then climb to the middle linebacker. You are uncovered — go get him." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Nobody chases from behind." },
+    { p:"RE", x:850, y:322, k:"fake", motion:[[850,322],[700,332],[566,338]], job:"Motion left before the snap and keep running. You are the decoy." },
+    { p:"RH", x:570, y:404, k:"block", on:"CL", path:[[570,404],[430,398],[280,330]], job:"Kick out the corner — run at him and drive him toward the sideline. The hole opens up inside of you." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[468,410]], job:"Take the snap, hand it left, then block backside." },
+    { p:"LH", x:430, y:404, k:"carry", ball:true, path:[[430,404],[344,412],[244,382],[196,300]], job:"Take the handoff and aim between the crack block and the kick-out. Hit it fast and turn up." }
+  ]
+},
+{
+  id: "m3", group: "Motion", name: "Jet Sweep Right", n: 11,
+  gist: "Mirror of the sweep left. The right half comes in motion the other way, and the left half takes it around the right end.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"W", path:[[150,300],[268,244]], job:"Block down inside on the backside linebacker. Keep him from running the play down." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you and turn him inside." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then climb to the middle linebacker." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Seal him inside." },
+    { p:"RE", x:860, y:300, k:"block", on:"S",  path:[[860,300],[724,222]], job:"Come down inside and block the linebacker. Keep the sideline open." },
+    { p:"RH", x:300, y:344, k:"block", on:"CR", motion:[[300,344],[480,340],[690,336]], path:[[690,336],[800,270]], job:"Motion across to the right before the snap, then kick out the corner. Drive him toward the sideline." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[540,410]], job:"Take the snap and hand it to the left half going right. Then block backside." },
+    { p:"LH", x:430, y:404, k:"carry", ball:true, path:[[430,404],[542,416],[664,380],[736,314]], job:"Take the handoff and run right. Follow the motion man, get outside his block, and turn up the field." }
+  ]
+},
+{
+  id: "m4", group: "Motion", name: "Jet Across", n: 12,
+  gist: "The longest motion on the sheet. The right end runs all the way across the formation and takes the pitch going left, while the left half fakes hard to the right.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[156,258]], job:"Block the corner and turn him inside. The ball is going around outside of you." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then climb to the middle linebacker." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Nobody crosses behind you." },
+    { p:"RE", x:864, y:340, k:"carry", ball:true, motion:[[864,340],[652,346],[434,348],[268,346]], path:[[268,346],[204,318],[172,244]], job:"Start way out right and motion all the way across before the snap. Take the pitch on the run and turn up the left sideline. Do not slow down." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[420,394]], job:"Take the snap and pitch it out in front of the man coming across. Lead him — he is moving fast." },
+    { p:"LH", x:430, y:404, k:"fake", path:[[430,404],[562,414],[678,408]], job:"Fake like you have the ball and run right as hard as you can. If they follow you, the play works." },
+    { p:"RH", x:626, y:404, k:"block", on:"S", path:[[626,404],[634,320]], job:"Block the backside linebacker. Nobody chases the ball carrier across the field." }
+  ]
+},
+
+/* ---------------- POWER RUN ---------------- */
+{
+  id: "w1", group: "Power Run", name: "Power Right", n: 13,
+  gist: "The left guard pulls all the way around to the right and leads through the hole. The wing kicks the corner out, and the right end releases to the safety.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,258]], job:"Block the corner. Keep the backside clean." },
+    { p:"LG", x:430, y:300, k:"block", on:"S", path:[[430,300],[446,358],[570,360],[624,300]], job:"Pull. Step back, run behind your own line to the right, and block the first linebacker past the hole. Stay low and get there fast." },
+    { p:"C",  x:500, y:300, k:"block", on:"T1", path:[[500,300],[470,286]], job:"Snap it, then block back to your left. The left guard is leaving — that gap is yours now." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Get movement." },
+    { p:"LH", x:700, y:324, k:"block", on:"CR", path:[[700,324],[796,268]], job:"Kick out the corner. Drive him toward the sideline — that is what makes the hole." },
+    { p:"RE", x:860, y:300, k:"block", on:"FS", path:[[860,300],[700,180],[580,120]], job:"Release downfield and block the safety. He is the last man who can stop this." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[536,410]], job:"Take the snap and hand it to the right half. Then carry out your fake to the left." },
+    { p:"RH", x:570, y:404, k:"carry", ball:true, path:[[570,404],[604,424],[664,394],[700,322]], job:"Take the handoff and follow the pulling guard. Stay right on his hip and hit the hole the second it opens." }
+  ]
+},
+{
+  id: "w2", group: "Power Run", name: "Sweep Right", n: 14,
+  gist: "The cross block. The inside man goes out and kicks the corner toward the sideline; the outside man comes down and cracks the linebacker. This is the cleanest play on the sheet.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,262]], job:"Block the corner over you and stay on him the whole play." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Do not let him cross your face." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it. Nobody is over you — go straight up to the middle linebacker." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Get your helmet across him." },
+    { p:"LH", x:664, y:338, k:"block", on:"CR", path:[[664,338],[796,262]], job:"Run at the corner and drive him toward the sideline. This is the kick-out block — the whole play needs it." },
+    { p:"RE", x:860, y:300, k:"block", on:"S",  path:[[860,300],[716,220]], job:"Come down inside and block the linebacker. Cross in front of the kick-out man." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[540,412]], job:"Take the snap and hand it to the right half, then fake left." },
+    { p:"RH", x:570, y:412, k:"carry", ball:true, path:[[570,412],[652,428],[762,406],[836,340]], job:"Take the handoff, run for the outside, get around the kick-out block, then turn straight up the field." }
+  ]
+},
+{
+  id: "w3", group: "Power Run", name: "Counter Right", n: 15,
+  gist: "One step the wrong way, then back. The right half takes a jab step left before cutting hard right — it freezes the linebackers for just long enough.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,258]], job:"Block the corner. Keep him off the backside." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Move him off the ball." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then climb to the middle linebacker. The jab step buys you the extra second — use it." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Get movement to your right." },
+    { p:"RE", x:860, y:300, k:"block", on:"S",  path:[[860,300],[720,222]], job:"Come down inside and wall off the linebacker. He must not get to the hole." },
+    { p:"LH", x:300, y:344, k:"block", on:"W", motion:[[300,344],[398,348]], path:[[398,348],[386,280]], job:"Motion in tight before the snap, then block the backside linebacker." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[546,412]], job:"Take the snap and hand it to the right half after his jab step. Sell the fake left." },
+    { p:"RH", x:536, y:412, k:"carry", ball:true, path:[[536,412],[478,448],[606,452],[672,412],[694,330]], job:"Take one hard step to your LEFT, then cut back right and go. The jab step is the whole play — make them believe it." }
+  ]
+},
+{
+  id: "w4", group: "Power Run", name: "Reverse", n: 16,
+  coachLabel: "reverse",
+  gist: "The right end motions left to pull the defense that way. The ball ends up with the left half running all the way back to the right.",
+  men: [
+    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,258]], job:"Block the corner and hold it. Give the reverse time to develop behind you." },
+    { p:"LH", x:236, y:352, k:"carry", ball:true, path:[[236,352],[356,398],[522,404],[664,372],[736,272]], job:"You get the ball coming back the other way. Be patient at first, let them chase the fake, then get to the right sideline and go." },
+    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Block the down lineman over you and hold him. The ball is coming back this way." },
+    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then take the middle linebacker. Hold your block a long time — the ball comes back late." },
+    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Block the down lineman over you and hold your block a long time." },
+    { p:"RE", x:864, y:328, k:"fake", motion:[[864,328],[762,346],[692,352]], job:"Motion left before the snap and keep running left. Sell it — the defense has to follow you or this does not work." },
+    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[446,398]], job:"Take the snap, fake left, then hand the ball to the left half coming back to the right." },
+    { p:"RH", x:626, y:404, k:"block", on:"CR", path:[[626,404],[770,320]], job:"Block the corner on the right edge and hold it. The ball is coming to your side late." }
+  ]
+}
+];
+
+/* ============================================================
+   THE WORKING PLAYBOOK
+   BUILTIN is what came off the coach's sheet. PLAYS is what is actually on
+   this tablet — the same thing until somebody edits it, then whatever they
+   made it. Everything lives in localStorage, on the device, and nowhere else.
+   ============================================================ */
+
+const STORE = "chalk.playbook.v2";
+const clone = o => JSON.parse(JSON.stringify(o));
+let PLAYS = [];
+
+/* The throw used to belong to the play. It belongs to whoever throws it, so
+   that it edits like every other line. Old playbooks get moved across here. */
+function migrate(p) {
+  if (!p.def) p.def = clone(DEFENSE);
+  if (p.pass) {
+    const passer = p.men.find(m => m.k === "hand") || p.men.find(m => m.p === "QB") || p.men[0];
+    if (passer && !passer.throw) passer.throw = p.pass;
+    delete p.pass;
+  }
+  return p;
+}
+function freshPlay(src) { return migrate(clone(src)); }
+function loadBook() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { /* unreadable */ }
+  if (saved && Array.isArray(saved.plays) && saved.plays.length) {
+    PLAYS = saved.plays.map(migrate);
+  } else {
+    PLAYS = BUILTIN.map(freshPlay);
+  }
+}
+function saveBook() {
+  try { localStorage.setItem(STORE, JSON.stringify({ v: 2, plays: PLAYS })); }
+  catch (e) { /* private browsing: the session still works, it just will not persist */ }
+}
+function renumber() { PLAYS.forEach((p, i) => { p.n = i + 1; }); }
+
+loadBook();
+
+/* ============================================================
+   FIELD RENDERING
+   ============================================================ */
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (n, a) => { const e = document.createElementNS(SVGNS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+
+const C = { chalk:"#F4F7F2", ball:"#FFB020", motion:"#8FC5DC", defense:"#93A5A0" };
+
+const field = document.getElementById("field");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let current = PLAYS[0];
+let selected = null;   // position code, or null
+let myPos = null;      // "which one are you"
+let anim = null;       // running animation handle
+let editing = false;   // study mode or edit mode
+let animateNext = true;
+let dragMoved = false; // suppresses the click that ends a drag
+let activeLine = "path";  // which line a tap on the field adds a node to
+let selPt = null;         // {key, idx} of the node under the cursor's last tap
+
+function drawTurf(root) {
+  const g = el("g", { "aria-hidden": "true" });
+  g.appendChild(el("rect", { x:0, y:0, width:1000, height:640, fill:"#2C6B41" }));
+
+  // mowed bands. Every band edge lands on a yard line (y = 60 + 80k), so the
+  // mow changes shade exactly where the chalk is.
+  for (let y = -20, i = 0; y < 640; y += 80, i++) {
+    if (i % 2 === 0) g.appendChild(el("rect", { x:0, y, width:1000, height:80, fill:"#27603A" }));
+  }
+
+  // sidelines
+  g.appendChild(el("rect", { x:0, y:0, width:26, height:640, fill:"#1C4A2C" }));
+  g.appendChild(el("rect", { x:974, y:0, width:26, height:640, fill:"#1C4A2C" }));
+
+  // yard lines every 5 yards
+  for (let y = 60; y <= 620; y += 80) {
+    if (y === 300) continue;
+    g.appendChild(el("line", { x1:26, y1:y, x2:974, y2:y, stroke:"#FFFFFF", "stroke-opacity":".17", "stroke-width":3 }));
+  }
+
+  // hash marks
+  for (const hx of [372, 628]) {
+    for (let y = 20; y <= 630; y += 20) {
+      g.appendChild(el("line", { x1:hx, y1:y, x2:hx, y2:y+9, stroke:"#FFFFFF", "stroke-opacity":".13", "stroke-width":3 }));
+    }
+  }
+
+  // line of scrimmage
+  g.appendChild(el("line", { x1:26, y1:300, x2:974, y2:300, stroke:"#FFFFFF", "stroke-opacity":".42", "stroke-width":4 }));
+
+  root.appendChild(g);
+}
+
+/* geometry helpers */
+function ptsToD(pts) {
+  if (pts.length < 3) return "M" + pts.map(p => p.join(",")).join(" L");
+  // rounded corners through the interior points
+  let d = "M" + pts[0][0] + "," + pts[0][1];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const a = pts[i - 1], b = pts[i], c = pts[i + 1];
+    const in1 = shorten(b, a, 26), out1 = shorten(b, c, 26);
+    d += " L" + in1[0] + "," + in1[1] + " Q" + b[0] + "," + b[1] + " " + out1[0] + "," + out1[1];
+  }
+  const last = pts[pts.length - 1];
+  d += " L" + last[0] + "," + last[1];
+  return d;
+}
+function shorten(from, toward, dist) {
+  const dx = toward[0] - from[0], dy = toward[1] - from[1];
+  const len = Math.hypot(dx, dy) || 1;
+  const t = Math.min(dist, len / 2) / len;
+  return [from[0] + dx * t, from[1] + dy * t];
+}
+function angleOf(pts) {
+  const b = pts[pts.length - 1], a = pts[pts.length - 2];
+  return Math.atan2(b[1] - a[1], b[0] - a[0]);
+}
+
+function arrowHead(pts, color, size) {
+  const [x, y] = pts[pts.length - 1];
+  const th = angleOf(pts);
+  const p = (l, w) => [x + Math.cos(th) * l - Math.sin(th) * w, y + Math.sin(th) * l + Math.cos(th) * w];
+  const a = p(size * 0.45, 0), b = p(-size * 0.6, size * 0.62), c = p(-size * 0.6, -size * 0.62);
+  return el("path", { d: "M" + a + " L" + b + " L" + c + " Z", fill: color });
+}
+function tBar(pts, color, half, w) {
+  const [x, y] = pts[pts.length - 1];
+  const th = angleOf(pts) + Math.PI / 2;
+  const dx = Math.cos(th) * half, dy = Math.sin(th) * half;
+  return el("line", { x1:x-dx, y1:y-dy, x2:x+dx, y2:y+dy, stroke:color, "stroke-width":w, "stroke-linecap":"round" });
+}
+
+function oGlyph(m, isSel) {
+  const g = el("g", { class:"oPlayer", tabindex:"0", role:"button",
+                      "aria-label": posName(m.p) + ". " + (m.job || "No job set."), "data-pos": m.p });
+  const r = 21;
+  if (isSel) g.appendChild(el("circle", { cx:m.x, cy:m.y, r:r+9, fill:"none", stroke:C.ball, "stroke-width":3, "stroke-opacity":".9" }));
+  g.appendChild(el("circle", { cx:m.x, cy:m.y, r, fill: m.ball ? C.ball : "rgba(12,26,18,.34)",
+                               stroke: m.ball ? C.ball : C.chalk, "stroke-width":4.5 }));
+  const t = el("text", { x:m.x, y:m.y+4.5, "text-anchor":"middle",
+                         "font-family":"'IBM Plex Mono', ui-monospace, monospace",
+                         "font-size":13, "font-weight":600, "letter-spacing":".02em",
+                         fill: m.ball ? "#1A1204" : C.chalk });
+  t.textContent = m.p;
+  g.appendChild(t);
+  return g;
+}
+
+function xGlyph(d) {
+  const g = el("g", { "aria-hidden":"true" });
+  const r = 15;
+  g.appendChild(el("line", { x1:d.x-r, y1:d.y-r, x2:d.x+r, y2:d.y+r, stroke:C.defense, "stroke-width":5.5, "stroke-linecap":"round" }));
+  g.appendChild(el("line", { x1:d.x+r, y1:d.y-r, x2:d.x-r, y2:d.y+r, stroke:C.defense, "stroke-width":5.5, "stroke-linecap":"round" }));
+  return g;
+}
+
+function render(play) {
+  field.textContent = "";
+  drawTurf(field);
+
+  const gMotion = el("g", {}), gLines = el("g", {}), gCaps = el("g", {}),
+        gDef = el("g", {}), gOff = el("g", {}), gGrips = el("g", {});
+  field.append(gMotion, gLines, gCaps, gDef, gOff, gGrips);
+
+  play.def.forEach((d, i) => {
+    const g = xGlyph(d);
+    if (editing) {
+      g.setAttribute("class", "grabbable");
+      g.removeAttribute("aria-hidden");
+      g.addEventListener("pointerdown", e => startDrag(e, { kind:"def", i }));
+    }
+    gDef.appendChild(g);
+  });
+
+  const drawables = [];
+
+  play.men.forEach(m => {
+    // the throw: the ball in the air, so it stays readable whoever is selected
+    if (m.throw && m.throw.length > 1) {
+      const p = el("path", { d: ptsToD(m.throw), fill:"none", stroke:C.ball, "stroke-width":3.4,
+                             "stroke-dasharray":"2 12", "stroke-linecap":"round", class:"ballink" });
+      gLines.appendChild(p);
+      const h = arrowHead(m.throw, C.ball, 17);
+      h.setAttribute("class", "ballink");
+      gCaps.appendChild(h);
+    }
+    if (m.motion && m.motion.length > 1) {
+      const p = el("path", { d: ptsToD(m.motion), fill:"none", stroke:C.motion, "stroke-width":4,
+                             "stroke-dasharray":"11 9", "stroke-linecap":"round", "data-pos":m.p, class:"pline" });
+      gMotion.appendChild(p);
+      const head = arrowHead(m.motion, C.motion, 15);
+      head.setAttribute("data-pos", m.p);
+      gCaps.appendChild(head);
+    }
+    const pts = resolvePath(m, play);
+    if (pts && pts.length > 1) {
+      const isBall = m.k === "carry" || m.k === "hand";
+      const color = isBall ? C.ball : C.chalk;
+      const w = m.k === "carry" ? 8 : m.k === "hand" ? 5 : 5.5;
+      const cls = isBall ? "pline ballink" : "pline";
+      const p = el("path", { d: ptsToD(pts), fill:"none", stroke:color, "stroke-width":w,
+                             "stroke-linecap":"round", "stroke-linejoin":"round", "data-pos":m.p, class:cls });
+      gLines.appendChild(p);
+      drawables.push(p);
+      const cap = m.k === "block"
+        ? tBar(pts, color, 17, 5.5)
+        : arrowHead(pts, color, m.k === "carry" ? 30 : m.k === "hand" ? 15 : 19);
+      cap.setAttribute("data-pos", m.p);
+      if (isBall) cap.setAttribute("class", "ballink");
+      gCaps.appendChild(cap);
+    }
+  });
+
+  play.men.forEach((m, i) => {
+    const g = oGlyph(m, selected === m.p);
+    g.addEventListener("click", () => { if (!dragMoved) select(m.p); });
+    g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(m.p); } });
+    if (editing) {
+      g.setAttribute("class", "oPlayer grabbable");
+      g.addEventListener("pointerdown", e => startDrag(e, { kind:"man", i }));
+    }
+    gOff.appendChild(g);
+  });
+
+  // grips on the selected player's lines, so a line can be reshaped by hand
+  if (editing && selected) {
+    const m = play.men.find(x => x.p === selected);
+    if (m) {
+      LINEKEYS.forEach(key => {
+        const line = m[key];
+        if (!line) return;
+        const dim = key !== activeLine;
+        line.forEach((pt, idx) => {
+          // a line's first point rides with the player; a throw's does not,
+          // because the release point sits behind him after his drop
+          if (idx === 0 && key !== "throw") return;
+          const here = selPt && selPt.key === key && selPt.idx === idx;
+          const col = key === "motion" ? C.motion : C.ball;
+          const grip = el("rect", { x: pt[0]-10, y: pt[1]-10, width:20, height:20, rx:5,
+                                    class:"grip", fill: here ? col : "#0E1416",
+                                    stroke: col, "stroke-width":3,
+                                    opacity: dim ? .5 : 1 });
+          grip.addEventListener("pointerdown", e => startDrag(e, { kind:"pt", key, idx }));
+          grip.addEventListener("contextmenu", e => { e.preventDefault(); deletePoint(key, idx); });
+          gGrips.appendChild(grip);
+        });
+      });
+    }
+  }
+
+  // draw-on
+  if (!reduceMotion && !editing && animateNext) {
+    gCaps.style.opacity = "0";
+    drawables.forEach((p, i) => {
+      const L = p.getTotalLength();
+      p.style.strokeDasharray = L + " " + L;
+      p.style.strokeDashoffset = L;
+      p.style.transition = "stroke-dashoffset .5s ease " + (i * 0.045) + "s";
+      requestAnimationFrame(() => requestAnimationFrame(() => { p.style.strokeDashoffset = "0"; }));
+    });
+    gCaps.style.transition = "opacity .3s ease .55s";
+    requestAnimationFrame(() => requestAnimationFrame(() => { gCaps.style.opacity = "1"; }));
+  }
+
+  applyDim();
+}
+
+function applyDim() {
+  const groups = field.querySelectorAll("[data-pos]");
+  const focus = editing ? null : selected;   // while editing you need to see everything
+  groups.forEach(n => {
+    const on = !focus || n.getAttribute("data-pos") === focus;
+    n.classList.toggle("dimmed", !on);
+    n.classList.toggle("undimmed", on);
+  });
+}
+
+/* ============================================================
+   RUN IT
+   ============================================================ */
+
+function measured(pts) {
+  const p = document.createElementNS(SVGNS, "path");
+  p.setAttribute("d", ptsToD(pts));
+  return { node: p, len: p.getTotalLength.bind(p) };
+}
+
+function runPlay() {
+  stopRun();
+  const btn = document.getElementById("runBtn");
+  btn.disabled = true;
+  btn.textContent = "Running…";
+
+  const scratch = el("g", { opacity:"0" });
+  field.appendChild(scratch);
+
+  const actors = current.men.map(m => {
+    const node = field.querySelector('.oPlayer[data-pos="' + m.p + '"]');
+    const mk = pts => { const o = measured(pts); scratch.appendChild(o.node); return o.node; };
+    const run = resolvePath(m, current);
+    return {
+      m, node,
+      motionPath: m.motion ? mk(m.motion) : null,
+      runPath:    run      ? mk(run)      : null
+    };
+  });
+
+  const PRE = 900, POST = 1500;
+  const hasMotion = actors.some(a => a.motionPath);
+  const t0 = performance.now();
+  const total = (hasMotion ? PRE + 250 : 0) + POST;
+
+  function move(node, path, t) {
+    const L = path.getTotalLength();
+    const pt = path.getPointAtLength(L * t);
+    const base = current.men.find(m => m.p === node.getAttribute("data-pos"));
+    node.setAttribute("transform", "translate(" + (pt.x - base.x) + "," + (pt.y - base.y) + ")");
+  }
+
+  function frame(now) {
+    const t = now - t0;
+    actors.forEach(a => {
+      if (!a.node) return;
+      if (hasMotion && t < PRE) {
+        if (a.motionPath) move(a.node, a.motionPath, ease(t / PRE));
+        return;
+      }
+      const t2 = Math.max(0, Math.min(1, (t - (hasMotion ? PRE + 250 : 0)) / POST));
+      if (a.motionPath && !a.runPath) { move(a.node, a.motionPath, 1); return; }
+      if (a.motionPath && a.runPath && t2 === 0) { move(a.node, a.motionPath, 1); return; }
+      if (a.runPath) move(a.node, a.runPath, ease(t2));
+    });
+    if (t < total) anim = requestAnimationFrame(frame);
+    else { anim = null; btn.disabled = false; btn.textContent = "Run it again"; scratch.remove(); }
+  }
+  const ease = x => x < .5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2;
+  anim = requestAnimationFrame(frame);
+}
+
+function stopRun() {
+  if (anim) { cancelAnimationFrame(anim); anim = null; }
+  field.querySelectorAll(".oPlayer").forEach(n => n.removeAttribute("transform"));
+  const b = document.getElementById("runBtn");
+  b.disabled = false; b.textContent = "Run it";
+}
+
+/* ============================================================
+   DRAGGING AND DRAWING
+   ============================================================ */
+
+function svgPt(evt) {
+  const p = field.createSVGPoint();
+  p.x = evt.clientX; p.y = evt.clientY;
+  const q = p.matrixTransform(field.getScreenCTM().inverse());
+  return [Math.round(q.x), Math.round(q.y)];
+}
+
+let drag = null;
+
+function startDrag(evt, what) {
+  if (!editing) return;
+  if (evt.button === 2) return;           // right button is for deleting
+  evt.preventDefault();
+  evt.stopPropagation();
+  drag = Object.assign({ from: svgPt(evt) }, what);
+  dragMoved = false;
+  if (what.kind === "man") selectSilently(current.men[what.i].p);
+  if (what.kind === "pt") {
+    selPt = { key: what.key, idx: what.idx };
+    animateNext = false; render(current); animateNext = true;
+    paintEditor();
+  }
+  try { field.setPointerCapture(evt.pointerId); } catch (e) { /* pointer already gone */ }
+}
+
+function onDragMove(evt) {
+  if (!drag) return;
+  const [x, y] = svgPt(evt);
+  if (Math.abs(x - drag.from[0]) > 3 || Math.abs(y - drag.from[1]) > 3) dragMoved = true;
+  if (!dragMoved) return;
+
+  if (drag.kind === "def") {
+    const d = current.def[drag.i];
+    d.x = clampX(x); d.y = clampY(y);
+  } else if (drag.kind === "man") {
+    const m = current.men[drag.i];
+    const nx = clampX(x), ny = clampY(y);
+    const dx = nx - m.x, dy = ny - m.y;
+    m.x = nx; m.y = ny;
+    const anchor = m.motion || m.path;          // keep his line attached to him
+    if (anchor) anchor[0] = [m.x, m.y];
+    // the throw leaves his hand after a drop, so carry the release point with
+    // him but leave the target where the receiver is
+    if (m.throw && m.throw.length) m.throw[0] = [m.throw[0][0] + dx, m.throw[0][1] + dy];
+  } else if (drag.kind === "pt") {
+    const m = current.men.find(z => z.p === selected);
+    if (!m) return;
+    if (drag.key === "path" && m.on) { m.path = resolvePath(m, current); delete m.on; }
+    m[drag.key][drag.idx] = [clampX(x), clampY(y)];
+  }
+  animateNext = false;
+  render(current);
+  animateNext = true;
+}
+
+function endDrag(evt) {
+  if (!drag) return;
+  try { field.releasePointerCapture(evt.pointerId); } catch (e) { /* already gone */ }
+  drag = null;
+  if (dragMoved) { saveBook(); paintEditor(); }
+  setTimeout(() => { dragMoved = false; }, 0);
+}
+
+const clampX = v => Math.max(30, Math.min(970, v));
+const clampY = v => Math.max(50, Math.min(505, v));
+
+field.addEventListener("pointermove", onDragMove);
+field.addEventListener("pointerup", endDrag);
+field.addEventListener("pointercancel", endDrag);
+field.addEventListener("contextmenu", e => { if (editing) e.preventDefault(); });
+
+/* How far a point is from a line segment, so a node dropped onto the line
+   lands in the middle of it rather than on the end. */
+function distToSeg(p, a, b) {
+  const vx = b[0]-a[0], vy = b[1]-a[1];
+  const len2 = vx*vx + vy*vy;
+  let t = len2 ? ((p[0]-a[0])*vx + (p[1]-a[1])*vy) / len2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(p[0] - (a[0]+t*vx), p[1] - (a[1]+t*vy));
+}
+
+const LINEKEYS = ["motion", "path", "throw"];
+
+function addPoint(m, key, pt) {
+  if (key === "path" && m.on) { m.path = resolvePath(m, current); delete m.on; }
+  if (!m[key] || !m[key].length) m[key] = key === "throw" ? [] : [[m.x, m.y]];
+  const line = m[key];
+  let best = -1, bestD = 26;
+  for (let i = 0; i < line.length - 1; i++) {
+    const d = distToSeg(pt, line[i], line[i + 1]);
+    if (d < bestD) { bestD = d; best = i; }
+  }
+  const idx = best >= 0 ? best + 1 : line.length;
+  line.splice(idx, 0, pt);           // drop it into the line, or extend the end
+  selPt = { key, idx };
+}
+
+function deletePoint(key, idx) {
+  const m = current.men.find(z => z.p === selected);
+  if (!m || !m[key]) return;
+  if (idx === 0 && key !== "throw") return;      // that one is the player himself
+  if (key === "path" && m.on) { m.path = resolvePath(m, current); delete m.on; }
+  m[key].splice(idx, 1);
+  if (m[key].length < 2) delete m[key];   // an anchor on its own is not a line
+  selPt = null;
+  animateNext = false; render(current); animateNext = true;
+  saveBook(); paintJobs(); paintEditor();
+}
+
+// a tap on open grass adds a node to whichever line is active
+field.addEventListener("pointerdown", evt => {
+  if (!editing || evt.button === 2) return;
+  const m = current.men.find(z => z.p === selected);
+  if (!m) return;
+  const pt = svgPt(evt);
+  addPoint(m, activeLine, [clampX(pt[0]), clampY(pt[1])]);
+  animateNext = false; render(current); animateNext = true;
+  saveBook(); paintJobs(); paintEditor();
+});
+
+/* ============================================================
+   UI
+   ============================================================ */
+
+const groupsEl  = document.getElementById("groups");
+const chipsEl   = document.getElementById("chips");
+const joblistEl = document.getElementById("joblist");
+const ORDER = ["Pass Plays", "QB Run", "Motion", "Power Run"];
+
+function buildRail() {
+  groupsEl.textContent = "";
+  const names = ORDER.concat(PLAYS.map(p => p.group).filter(g => !ORDER.includes(g)));
+  [...new Set(names)].forEach(gname => {
+    const inGroup = PLAYS.filter(p => p.group === gname);
+    if (!inGroup.length) return;
+    const sec = document.createElement("div");
+    sec.className = "group";
+    const h = document.createElement("h2");
+    h.className = "eyebrow";
+    h.textContent = gname;
+    const list = document.createElement("div");
+    list.className = "playlist";
+    inGroup.forEach(p => {
+      const b = document.createElement("button");
+      b.className = "playbtn";
+      b.dataset.id = p.id;
+      b.innerHTML = '<span class="num"></span><span class="nm"></span>';
+      b.querySelector(".num").textContent = p.n;
+      b.querySelector(".nm").textContent = p.name;
+      b.addEventListener("click", () => load(p.id));
+      list.appendChild(b);
+    });
+    sec.append(h, list);
+    groupsEl.appendChild(sec);
+  });
+  document.querySelectorAll(".playbtn").forEach(b =>
+    b.setAttribute("aria-current", String(b.dataset.id === (current && current.id))));
+}
+
+function buildChips() {
+  chipsEl.textContent = "";
+  allPositions().forEach(code => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.type = "button";
+    b.textContent = code;
+    b.title = posName(code);
+    b.setAttribute("aria-pressed", String(code === myPos));
+    b.addEventListener("click", () => {
+      myPos = (myPos === code) ? null : code;
+      selected = myPos;
+      buildChips();
+      load(current.id);
+    });
+    chipsEl.appendChild(b);
+  });
+}
+
+function selectSilently(pos) {
+  if (selected === pos) return;
+  selected = pos;
+  selPt = null;
+  render(current);
+  paintJobs();
+  paintEditor();
+}
+
+function select(pos) {
+  selected = (selected === pos) ? null : pos;
+  selPt = null;
+  animateNext = false;
+  render(current);
+  animateNext = true;
+  paintJobs();
+  paintEditor();
+}
+
+function paintJobs() {
+  joblistEl.textContent = "";
+  const head = document.getElementById("jobsHead");
+  head.textContent = selected ? "Your job — " + posName(selected) : "Everybody’s job";
+
+  const men = selected ? current.men.filter(m => m.p === selected) : current.men.slice();
+  if (!selected) {
+    const seq = ["QB","LH","RH","C","LG","RG","LE","RE"];
+    const rank = p => { const i = seq.indexOf(p); return i < 0 ? 99 : i; };
+    men.sort((a, b) => rank(a.p) - rank(b.p));
+  }
+  men.forEach(m => {
+    const b = document.createElement("button");
+    b.className = "job";
+    b.type = "button";
+    b.dataset.ball = m.ball ? "1" : "0";
+    b.setAttribute("aria-pressed", String(selected === m.p));
+    const roleWord = m.ball ? "Has the ball"
+      : m.k === "block" ? "Block"
+      : m.k === "route" ? "Route"
+      : m.k === "carry" ? "Runs it"
+      : m.k === "hand"  ? "Hands off"
+      : m.k === "fake"  ? "Fake"
+      : "Ask coach";
+    b.innerHTML = '<span class="tag"></span><span class="txt"><span class="role"></span><span class="j"></span></span>';
+    b.querySelector(".tag").textContent = m.p;
+    b.querySelector(".role").textContent = roleWord;
+    b.querySelector(".j").textContent = m.job || "No job written yet.";
+    b.addEventListener("click", () => select(m.p));
+    joblistEl.appendChild(b);
+  });
+
+  if (selected) {
+    const back = document.createElement("button");
+    back.className = "btn";
+    back.type = "button";
+    back.style.marginTop = "10px";
+    back.style.justifySelf = "start";
+    back.textContent = "Show everybody";
+    back.addEventListener("click", () => select(selected));
+    joblistEl.appendChild(back);
+  }
+}
+
+/* ============================================================
+   THE EDITOR
+   ============================================================ */
+
+const KINDS = [
+  { k:"block", label:"Block" },
+  { k:"route", label:"Route" },
+  { k:"carry", label:"Runs it" },
+  { k:"hand",  label:"Hands off" },
+  { k:"fake",  label:"Fake" },
+  { k:"none",  label:"Nothing" }
+];
+
+const editorEl = document.getElementById("editor");
+const field$   = id => document.getElementById(id);
+
+function mkField(labelText, node) {
+  const l = document.createElement("label");
+  l.className = "edfield";
+  const s = document.createElement("span");
+  s.className = "eyebrow";
+  s.textContent = labelText;
+  l.append(s, node);
+  return l;
+}
+function mkBtn(text, fn, cls) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "btn " + (cls || "");
+  b.textContent = text;
+  b.addEventListener("click", fn);
+  return b;
+}
+function touch() { saveBook(); }
+
+function paintEditor() {
+  editorEl.hidden = !editing;
+  document.querySelector(".jobs").hidden = editing;
+  if (!editing) return;
+  editorEl.textContent = "";
+
+  /* --- the play itself --- */
+  const head = document.createElement("div");
+  head.className = "edgrid";
+
+  const nameIn = document.createElement("input");
+  nameIn.type = "text"; nameIn.value = current.name;
+  nameIn.addEventListener("input", () => {
+    current.name = nameIn.value;
+    field$("playTitle").textContent = current.name;
+    const btn = document.querySelector('.playbtn[data-id="' + current.id + '"] .nm');
+    if (btn) btn.textContent = current.name;
+    touch();
+  });
+
+  const groupIn = document.createElement("input");
+  groupIn.type = "text"; groupIn.value = current.group; groupIn.setAttribute("list", "groupList");
+  groupIn.addEventListener("change", () => {
+    current.group = groupIn.value.trim() || "Other";
+    field$("playCat").textContent = current.group;
+    buildRail(); touch();
+  });
+
+  const gistIn = document.createElement("textarea");
+  gistIn.rows = 2; gistIn.value = current.gist || "";
+  gistIn.addEventListener("input", () => {
+    current.gist = gistIn.value;
+    field$("playGist").textContent = current.gist;
+    touch();
+  });
+
+  head.append(mkField("Play name", nameIn), mkField("Group", groupIn));
+  const gistWrap = mkField("What happens", gistIn);
+  gistWrap.classList.add("wide");
+  head.appendChild(gistWrap);
+  editorEl.appendChild(head);
+
+  /* --- the selected player --- */
+  const box = document.createElement("div");
+  box.className = "edbox";
+  const m = current.men.find(x => x.p === selected);
+
+  if (!m) {
+    const hint = document.createElement("p");
+    hint.className = "edhint";
+    hint.textContent = "Tap a player to give him a job. Drag anybody — ours or theirs — to move them.";
+    box.appendChild(hint);
+  } else {
+    const title = document.createElement("div");
+    title.className = "edtitle";
+    title.textContent = m.p + " · " + posName(m.p);
+    box.appendChild(title);
+
+    const row1 = document.createElement("div");
+    row1.className = "edgrid";
+
+    const labIn = document.createElement("input");
+    labIn.type = "text"; labIn.value = m.p; labIn.maxLength = 4;
+    labIn.addEventListener("change", () => {
+      const v = labIn.value.trim().toUpperCase().slice(0, 4);
+      if (!v || current.men.some(z => z !== m && z.p === v)) { labIn.value = m.p; return; }
+      m.p = v; selected = v;
+      buildChips(); animateNext = false; render(current); animateNext = true;
+      paintJobs(); paintEditor(); touch();
+    });
+    row1.appendChild(mkField("Label", labIn));
+
+    const ballWrap = document.createElement("label");
+    ballWrap.className = "edcheck";
+    const ballIn = document.createElement("input");
+    ballIn.type = "checkbox"; ballIn.checked = !!m.ball;
+    ballIn.addEventListener("change", () => {
+      if (ballIn.checked) current.men.forEach(z => { delete z.ball; });
+      if (ballIn.checked) m.ball = true; else delete m.ball;
+      animateNext = false; render(current); animateNext = true;
+      paintJobs(); paintEditor(); touch();
+    });
+    ballWrap.append(ballIn, document.createTextNode(" He ends up with the ball"));
+    row1.appendChild(ballWrap);
+    box.appendChild(row1);
+
+    const types = document.createElement("div");
+    types.className = "edtypes";
+    KINDS.forEach(({ k, label }) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip"; b.textContent = label;
+      b.setAttribute("aria-pressed", String(m.k === k));
+      b.addEventListener("click", () => {
+        m.k = k;
+        if (k === "none") { delete m.path; delete m.on; }
+        animateNext = false; render(current); animateNext = true;
+        paintJobs(); paintEditor(); touch();
+      });
+      types.appendChild(b);
+    });
+    box.append(mkField("What kind of assignment", types));
+
+    /* which line you are drawing on */
+    const which = document.createElement("div");
+    which.className = "edtypes";
+    [["path", "His line"], ["motion", "Motion before the snap"], ["throw", "The throw"]].forEach(([key, label]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip"; b.textContent = label;
+      b.setAttribute("aria-pressed", String(activeLine === key));
+      b.addEventListener("click", () => {
+        activeLine = key; selPt = null;
+        animateNext = false; render(current); animateNext = true;
+        paintEditor();
+      });
+      which.appendChild(b);
+    });
+    box.append(mkField("Clicks on the field draw", which));
+
+    const tip = document.createElement("p");
+    tip.className = "edhint drawing";
+    tip.textContent = "Click open grass to add a node — drop it on the line to insert it in the middle, or out in space to extend the end. "
+                    + "Click and hold a node to move it. Right-click a node to delete it.";
+    box.appendChild(tip);
+
+    const lines = document.createElement("div");
+    lines.className = "edtypes";
+    if (selPt) lines.appendChild(mkBtn("Delete the selected node",
+      () => deletePoint(selPt.key, selPt.idx), "danger"));
+    if (m.path) lines.appendChild(mkBtn("Erase his line", () => {
+      delete m.path; delete m.on; selPt = null;
+      animateNext = false; render(current); animateNext = true;
+      paintJobs(); paintEditor(); touch();
+    }));
+    if (m.motion) lines.appendChild(mkBtn("Erase his motion", () => {
+      delete m.motion; selPt = null;
+      animateNext = false; render(current); animateNext = true;
+      paintEditor(); touch();
+    }));
+    if (m.throw) lines.appendChild(mkBtn("Erase the throw", () => {
+      delete m.throw; selPt = null;
+      animateNext = false; render(current); animateNext = true;
+      paintEditor(); touch();
+    }));
+    if (lines.children.length) box.appendChild(lines);
+
+    if (m.on) {
+      const aim = document.createElement("p");
+      aim.className = "edhint";
+      aim.textContent = "This block is aimed at a defender, so it follows him if you drag him. Touch the line yourself and it becomes a fixed line instead.";
+      box.appendChild(aim);
+    }
+
+    const jobIn = document.createElement("textarea");
+    jobIn.rows = 3; jobIn.value = m.job || "";
+    jobIn.addEventListener("input", () => { m.job = jobIn.value; touch(); });
+    jobIn.addEventListener("change", paintJobs);
+    const jw = mkField("What he does, in his words", jobIn);
+    jw.classList.add("wide");
+    box.appendChild(jw);
+
+    box.appendChild(mkBtn("Remove " + m.p + " from this play", () => {
+      current.men = current.men.filter(z => z !== m);
+      selected = null;
+      buildChips(); animateNext = false; render(current); animateNext = true;
+      paintJobs(); paintEditor(); touch();
+    }, "danger"));
+  }
+  editorEl.appendChild(box);
+
+  /* --- playbook actions --- */
+  const acts = document.createElement("div");
+  acts.className = "edacts";
+  acts.appendChild(mkBtn("Add a player", () => {
+    let n = 1, label;
+    do { label = "P" + n++; } while (current.men.some(z => z.p === label));
+    current.men.push({ p: label, x: 500, y: 460, k: "block", job: "" });
+    selected = label;
+    buildChips(); animateNext = false; render(current); animateNext = true;
+    paintJobs(); paintEditor(); touch();
+  }));
+  acts.appendChild(mkBtn("New play", () => {
+    const p = {
+      id: "u" + Date.now().toString(36),
+      group: current.group, name: "New play", gist: "",
+      def: clone(DEFENSE),
+      men: clone(BUILTIN[5].men).map(z => ({ p:z.p, x:z.x, y:z.y, k:"block", job:"" }))
+    };
+    PLAYS.push(p); renumber(); buildRail(); touch(); load(p.id);
+  }));
+  acts.appendChild(mkBtn(current.verified ? "Checked with Coach ✓" : "Mark as checked with Coach", () => {
+    current.verified = !current.verified;
+    touch(); load(current.id);
+  }, current.verified ? "primary" : ""));
+  acts.appendChild(mkBtn("Put this defense on every play", () => {
+    PLAYS.forEach(p => { p.def = clone(current.def); });
+    touch(); paintEditor();
+  }));
+  acts.appendChild(mkBtn("Undo my changes to this play", () => {
+    const src = BUILTIN.find(b => b.id === current.id);
+    if (!src) return;
+    const i = PLAYS.findIndex(p => p.id === current.id);
+    PLAYS[i] = freshPlay(src); renumber(); buildRail(); buildChips(); touch(); load(PLAYS[i].id);
+  }));
+  acts.appendChild(mkBtn("Delete this play", () => {
+    if (PLAYS.length < 2) return;
+    const i = PLAYS.findIndex(p => p.id === current.id);
+    PLAYS.splice(i, 1); renumber(); buildRail(); buildChips(); touch();
+    load(PLAYS[Math.min(i, PLAYS.length - 1)].id);
+  }, "danger"));
+  editorEl.appendChild(acts);
+
+  /* --- backup --- */
+  const det = document.createElement("details");
+  det.className = "backup";
+  const sum = document.createElement("summary");
+  sum.textContent = "Back up or move this playbook";
+  det.appendChild(sum);
+
+  const note = document.createElement("p");
+  note.className = "edhint";
+  note.textContent = "Everything is saved on this device only. Copy the text below to keep a copy or to move the playbook to another tablet — paste it back in here and press Load.";
+  det.appendChild(note);
+
+  const ta = document.createElement("textarea");
+  ta.rows = 6; ta.className = "json";
+  ta.value = JSON.stringify({ v: 2, plays: PLAYS });
+  det.appendChild(ta);
+
+  const brow = document.createElement("div");
+  brow.className = "edtypes";
+  brow.appendChild(mkBtn("Copy", async () => {
+    ta.select();
+    try { await navigator.clipboard.writeText(ta.value); note.textContent = "Copied."; }
+    catch (e) { note.textContent = "Copy did not work here — the text is selected, so use your device's copy."; }
+  }));
+  brow.appendChild(mkBtn("Load what is in the box", () => {
+    try {
+      const data = JSON.parse(ta.value);
+      if (!data || !Array.isArray(data.plays) || !data.plays.length) throw new Error("no plays");
+      PLAYS = data.plays.map(p => (p.def ? p : Object.assign(p, { def: clone(DEFENSE) })));
+      renumber(); saveBook(); buildRail(); buildChips(); load(PLAYS[0].id);
+    } catch (e) {
+      note.textContent = "That text is not a Chalk playbook — nothing was changed.";
+    }
+  }));
+  brow.appendChild(mkBtn("Start over from the coach's sheet", () => {
+    if (!confirm("Throw away every edit and go back to the original 16 plays?")) return;
+    try { localStorage.removeItem(STORE); } catch (e) { /* nothing to remove */ }
+    PLAYS = BUILTIN.map(freshPlay);
+    selected = null; myPos = null;
+    buildRail(); buildChips(); load(PLAYS[0].id);
+  }, "danger"));
+  det.appendChild(brow);
+  editorEl.appendChild(det);
+}
+
+function setMode(on) {
+  editing = on;
+  selPt = null;
+  document.body.classList.toggle("editing", editing);
+  const b = field$("modeBtn");
+  b.textContent = editing ? "Done editing" : "Edit plays";
+  b.classList.toggle("primary", editing);
+  stopRun();
+  animateNext = false;
+  render(current);
+  animateNext = true;
+  paintJobs();
+  paintEditor();
+}
+
+function load(id) {
+  stopRun();
+  selPt = null;
+  current = PLAYS.find(p => p.id === id) || PLAYS[0];
+  if (myPos && current.men.some(m => m.p === myPos)) selected = myPos;
+  else if (!current.men.some(m => m.p === selected)) selected = null;
+
+  document.querySelectorAll(".playbtn").forEach(b =>
+    b.setAttribute("aria-current", String(b.dataset.id === current.id)));
+
+  document.getElementById("playTitle").textContent = current.name;
+  document.getElementById("playCat").textContent = current.group;
+  document.getElementById("playGist").textContent = current.gist;
+
+  const flagBox = document.getElementById("playFlag");
+  flagBox.textContent = "";
+  if (current.verified) {
+    const d = document.createElement("div");
+    d.className = "flag ok";
+    d.innerHTML = "<b>Checked with Coach</b><span>This one is confirmed.</span>";
+    flagBox.appendChild(d);
+  } else {
+    const notes = [];
+    if (current.coachLabel) notes.push(["Coach wrote “" + current.coachLabel + "” on this one.",
+      current.coachLabel === "reverse" ? "It is the only play he named." : "Probably a two-point play — worth asking."].join(" "));
+    if (current.group === "Pass Plays") notes.push("The left edge of the pass plays was cut off on our copy of the sheet.");
+    if (current.flag) notes.push(current.flag);
+    notes.forEach(text => {
+      const d = document.createElement("div");
+      d.className = "flag";
+      d.innerHTML = "<b>Check this</b><span></span>";
+      d.querySelector("span").textContent = text;
+      flagBox.appendChild(d);
+    });
+  }
+
+  render(current);
+  paintJobs();
+  paintEditor();
+}
+
+document.getElementById("runBtn").addEventListener("click", runPlay);
+document.getElementById("resetBtn").addEventListener("click", stopRun);
+document.getElementById("modeBtn").addEventListener("click", () => setMode(!editing));
+
+document.addEventListener("keydown", e => {
+  const t = e.target;
+  if (t && t.matches && t.matches("input, textarea")) return;
+  if (editing && selPt && (e.key === "Delete" || e.key === "Backspace")) {
+    e.preventDefault(); deletePoint(selPt.key, selPt.idx); return;
+  }
+  if (e.key === "Escape" && selPt) {
+    selPt = null; animateNext = false; render(current); animateNext = true; paintEditor(); return;
+  }
+  const i = PLAYS.findIndex(p => p.id === current.id);
+  if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); load(PLAYS[(i+1) % PLAYS.length].id); }
+  if (e.key === "ArrowUp"   || e.key === "ArrowLeft")  { e.preventDefault(); load(PLAYS[(i-1+PLAYS.length) % PLAYS.length].id); }
+});
+
+buildRail();
+buildChips();
+load(PLAYS[0].id);
+
+/* Keep working on a field with no signal. Fails quietly anywhere a service
+   worker is not allowed, which includes the preview sandbox. */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => { /* not available here */ });
+  });
+}
+</script>
