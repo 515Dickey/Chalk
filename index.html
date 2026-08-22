@@ -216,6 +216,16 @@
   }
   .job[data-ball="1"] .role { color: var(--ball); }
 
+  .stale {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    margin: 0 0 14px; padding: 11px 14px; border-radius: var(--radius);
+    background: rgba(143, 197, 220, .08);
+    border: 1px solid rgba(143, 197, 220, .32);
+    color: #C6DEE8; font-size: 14px;
+  }
+  .stale > span { flex: 1; min-width: 15ch; }
+  .stale .btn { padding: 7px 13px; font-size: 14px; }
+
   /* ---------- editor ---------- */
   .editor { margin: 24px 0 0; display: grid; gap: 16px; }
 
@@ -355,6 +365,7 @@
 
     <main>
       <div class="stage">
+        <div id="staleBar"></div>
         <div class="fieldwrap">
           <svg class="field" id="field" viewBox="0 44 1000 470" role="img" aria-label="Play diagram"></svg>
         </div>
@@ -724,6 +735,11 @@ const BUILTIN = [
 const STORE = "chalk.playbook.v2";
 const clone = o => JSON.parse(JSON.stringify(o));
 let PLAYS = [];
+let bookIsStale = false;   // a newer playbook shipped than the one on this device
+
+/* Bumped by scripts/bake.mjs every time a verified playbook is baked in.
+   A device holding an older one gets offered the update. */
+const BUILTIN_VERSION = 1;
 
 /* The throw used to belong to the play. It belongs to whoever throws it, so
    that it edits like every other line. Old playbooks get moved across here. */
@@ -742,12 +758,13 @@ function loadBook() {
   try { saved = JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { /* unreadable */ }
   if (saved && Array.isArray(saved.plays) && saved.plays.length) {
     PLAYS = saved.plays.map(migrate);
+    bookIsStale = (saved.builtin || 0) < BUILTIN_VERSION;
   } else {
     PLAYS = BUILTIN.map(freshPlay);
   }
 }
 function saveBook() {
-  try { localStorage.setItem(STORE, JSON.stringify({ v: 2, plays: PLAYS })); }
+  try { localStorage.setItem(STORE, JSON.stringify({ v: 2, builtin: BUILTIN_VERSION, plays: PLAYS })); }
   catch (e) { /* private browsing: the session still works, it just will not persist */ }
 }
 function renumber() { PLAYS.forEach((p, i) => { p.n = i + 1; }); }
@@ -1320,6 +1337,9 @@ const KINDS = [
   { k:"none",  label:"Nothing" }
 ];
 
+/* Only the local dev server can write to the source file. */
+const IS_LOCAL = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
+
 const editorEl = document.getElementById("editor");
 const field$   = id => document.getElementById(id);
 
@@ -1565,6 +1585,33 @@ function paintEditor() {
   note.textContent = "Everything is saved on this device only. Copy the text below to keep a copy or to move the playbook to another tablet — paste it back in here and press Load.";
   det.appendChild(note);
 
+  /* Running from scripts/serve.mjs: write straight into index.html, so a
+     verified playbook can be committed and pushed to the real site. */
+  if (IS_LOCAL) {
+    const bake = document.createElement("div");
+    bake.className = "edtypes";
+    const bnote = document.createElement("p");
+    bnote.className = "edhint";
+    bnote.textContent = "You are running the local copy, so you can write this straight into index.html as the new default for everybody. Commit and push afterwards.";
+    bake.appendChild(mkBtn("Save to the source file", async () => {
+      bnote.textContent = "Saving…";
+      try {
+        const res = await fetch("/__save", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ v: 2, plays: PLAYS })
+        });
+        const j = await res.json();
+        bnote.textContent = j.ok
+          ? `Saved ${j.count} plays into index.html (${j.checked} checked with Coach). Playbook version ${j.from} → ${j.to}. Now commit and push.`
+          : "Not saved — " + j.error;
+      } catch (e) {
+        bnote.textContent = "Could not reach the local server. Is scripts/serve.mjs still running?";
+      }
+    }, "primary"));
+    det.append(bake, bnote);
+  }
+
   const ta = document.createElement("textarea");
   ta.rows = 6; ta.className = "json";
   ta.value = JSON.stringify({ v: 2, plays: PLAYS });
@@ -1652,6 +1699,7 @@ function load(id) {
   render(current);
   paintJobs();
   paintEditor();
+  paintStaleBar();
 }
 
 document.getElementById("runBtn").addEventListener("click", runPlay);
@@ -1672,9 +1720,32 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowUp"   || e.key === "ArrowLeft")  { e.preventDefault(); load(PLAYS[(i-1+PLAYS.length) % PLAYS.length].id); }
 });
 
+/* A newer playbook shipped than the one saved on this device. Never silently
+   overwrite somebody's own edits — offer, and remember the answer. */
+function paintStaleBar() {
+  const bar = document.getElementById("staleBar");
+  bar.textContent = "";
+  if (!bookIsStale) return;
+  const d = document.createElement("div");
+  d.className = "stale";
+  const t = document.createElement("span");
+  t.textContent = "There is a newer playbook than the one saved on this device.";
+  const yes = mkBtn("Use the new one", () => {
+    PLAYS = BUILTIN.map(freshPlay);
+    bookIsStale = false; selected = null; myPos = null;
+    saveBook(); buildRail(); buildChips(); load(PLAYS[0].id);
+  }, "primary");
+  const no = mkBtn("Keep mine", () => {
+    bookIsStale = false; saveBook(); paintStaleBar();
+  });
+  d.append(t, yes, no);
+  bar.appendChild(d);
+}
+
 buildRail();
 buildChips();
 load(PLAYS[0].id);
+paintStaleBar();
 
 /* Keep working on a field with no signal. Fails quietly anywhere a service
    worker is not allowed, which includes the preview sandbox. */

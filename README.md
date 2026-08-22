@@ -29,6 +29,42 @@ remove players, add or delete plays.
 | Blue dashed line | Move before the snap |
 | ◯ | Us · ✕ | Them |
 
+## Correcting plays and shipping them
+
+Edits in the browser go to `localStorage`, which is one device and one origin.
+That is right for scribbles on a tablet and wrong for plays you have actually
+checked with the coach — those need to become what everybody gets. So there is
+a loop for turning a verified playbook back into source:
+
+```
+node scripts/serve.mjs          # then open http://localhost:5173
+```
+
+Edit and check plays as normal. Because you are on localhost, the editor grows
+one extra button under **Back up or move this playbook**:
+
+**Save to the source file** — writes the whole playbook into `BUILTIN` in
+`index.html` and bumps `BUILTIN_VERSION`. Then:
+
+```
+git add -A && git commit -m "Update the playbook" && git push
+```
+
+Vercel deploys, and the next time a device opens the app it offers *"There is a
+newer playbook than the one saved on this device"* — **Use the new one** or
+**Keep mine**. Nobody's own edits are ever overwritten silently, and a device
+that has drifted is never stuck on an old copy.
+
+If the JSON is somewhere else — pasted out of another device's backup box, say
+— `node scripts/bake.mjs playbook.json` does the same thing from the terminal.
+
+Both paths refuse a playbook with a missing id, name, player or coordinate, or
+with two plays sharing an id, rather than shipping something broken.
+
+Use the local server rather than opening the file directly: `file://` gives the
+page an opaque origin where `localStorage` is unreliable and a service worker
+will not register, so nothing behaves the way it does on the real site.
+
 ## How it is built
 
 One static HTML file. No build step, no framework, no dependencies, no server.
@@ -37,6 +73,8 @@ Everything renders to inline SVG.
 - `index.html` — the whole app
 - `manifest.webmanifest`, `sw.js`, `icons/` — installs to a home screen and
   keeps working with no signal, which matters at a practice field
+- `scripts/serve.mjs` — the local dev server, and its save endpoint
+- `scripts/bake.mjs`, `scripts/lib-bake.mjs` — a playbook back into source
 
 Blocks can be aimed at a named defender (`on: "S"`), so dragging a defender
 drags every block assigned to him. Draw or nudge a line by hand and that link
