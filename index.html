@@ -380,6 +380,7 @@
         <div class="controls">
           <button class="btn primary" id="runBtn">Run it</button>
           <button class="btn" id="resetBtn">Line up again</button>
+          <button class="btn" id="flipBtn" type="button" aria-pressed="false">Flip it</button>
         </div>
 
         <section class="editor" id="editor" hidden></section>
@@ -772,6 +773,47 @@ function renumber() { PLAYS.forEach((p, i) => { p.n = i + 1; }); }
 loadBook();
 
 /* ============================================================
+   FLIPPING A PLAY
+   Jet Sweep is one play you can run either way. Mirroring the geometry alone
+   would leave the left end standing on the right, so the paired labels swap
+   with it — the man lined up left is still the left end, now doing what the
+   right end used to do. Left and right in the written jobs swap to match.
+   ============================================================ */
+
+const FLIP_POS = { LE:"RE", RE:"LE", LG:"RG", RG:"LG", LH:"RH", RH:"LH" };
+const FLIP_DEF = { T1:"T2", T2:"T1", W:"S", S:"W", CL:"CR", CR:"CL" };
+const mirrorX = x => 1000 - x;
+
+function flipWords(s) {
+  return String(s == null ? "" : s).replace(/\b(left|right)\b/gi, w => {
+    const swap = w.toLowerCase() === "left" ? "right" : "left";
+    if (w === w.toUpperCase()) return swap.toUpperCase();
+    if (w[0] === w[0].toUpperCase()) return swap[0].toUpperCase() + swap.slice(1);
+    return swap;
+  });
+}
+
+function flipPlay(p) {
+  const q = clone(p);
+  q.name = flipWords(q.name);
+  q.gist = flipWords(q.gist);
+  if (q.flag) q.flag = flipWords(q.flag);
+  q.def = q.def.map(d => Object.assign({}, d, { id: FLIP_DEF[d.id] || d.id, x: mirrorX(d.x) }));
+  q.men = q.men.map(m => {
+    const n = Object.assign({}, m, { p: FLIP_POS[m.p] || m.p, x: mirrorX(m.x), job: flipWords(m.job) });
+    if (n.on) n.on = FLIP_DEF[n.on] || n.on;
+    LINEKEYS.forEach(k => { if (n[k]) n[k] = n[k].map(pt => [mirrorX(pt[0]), pt[1]]); });
+    return n;
+  });
+  return q;
+}
+
+/* What is on screen: the play as stored, or its mirror image. Editing always
+   works on the stored one, so edit mode turns the flip off. */
+let flipped = false;
+const view = () => (flipped && !editing) ? flipPlay(current) : current;
+
+/* ============================================================
    FIELD RENDERING
    ============================================================ */
 
@@ -1029,10 +1071,11 @@ function runPlay() {
   const scratch = el("g", { opacity:"0" });
   field.appendChild(scratch);
 
-  const actors = current.men.map(m => {
+  const shown = view();
+  const actors = shown.men.map(m => {
     const node = field.querySelector('.oPlayer[data-pos="' + m.p + '"]');
     const mk = pts => { const o = measured(pts); scratch.appendChild(o.node); return o.node; };
-    const run = resolvePath(m, current);
+    const run = resolvePath(m, shown);
     return {
       m, node,
       motionPath: m.motion ? mk(m.motion) : null,
@@ -1048,7 +1091,7 @@ function runPlay() {
   function move(node, path, t) {
     const L = path.getTotalLength();
     const pt = path.getPointAtLength(L * t);
-    const base = current.men.find(m => m.p === node.getAttribute("data-pos"));
+    const base = shown.men.find(m => m.p === node.getAttribute("data-pos"));
     node.setAttribute("transform", "translate(" + (pt.x - base.x) + "," + (pt.y - base.y) + ")");
   }
 
@@ -1102,7 +1145,7 @@ function startDrag(evt, what) {
   if (what.kind === "man") selectSilently(current.men[what.i].p);
   if (what.kind === "pt") {
     selPt = { key: what.key, idx: what.idx };
-    animateNext = false; render(current); animateNext = true;
+    animateNext = false; render(view()); animateNext = true;
     paintEditor();
   }
   try { field.setPointerCapture(evt.pointerId); } catch (e) { /* pointer already gone */ }
@@ -1122,8 +1165,7 @@ function onDragMove(evt) {
     const nx = clampX(x), ny = clampY(y);
     const dx = nx - m.x, dy = ny - m.y;
     m.x = nx; m.y = ny;
-    const anchor = m.motion || m.path;          // keep his line attached to him
-    if (anchor) anchor[0] = [m.x, m.y];
+    syncAnchors(m);
     // the throw leaves his hand after a drop, so carry the release point with
     // him but leave the target where the receiver is
     if (m.throw && m.throw.length) m.throw[0] = [m.throw[0][0] + dx, m.throw[0][1] + dy];
@@ -1132,9 +1174,10 @@ function onDragMove(evt) {
     if (!m) return;
     if (drag.key === "path" && m.on) { m.path = resolvePath(m, current); delete m.on; }
     m[drag.key][drag.idx] = [clampX(x), clampY(y)];
+    if (drag.key === "motion") syncAnchors(m);   // his line follows the motion
   }
   animateNext = false;
-  render(current);
+  render(view());
   animateNext = true;
 }
 
@@ -1166,9 +1209,32 @@ function distToSeg(p, a, b) {
 
 const LINEKEYS = ["motion", "path", "throw"];
 
+/* Where a player's line has to start.
+   If he goes in motion he is not standing on his spot at the snap — he is at
+   the end of the motion, so that is where his block or route begins. */
+function lineStart(m) {
+  if (m.motion && m.motion.length > 1) return m.motion[m.motion.length - 1].slice();
+  return [m.x, m.y];
+}
+
+/* Keep the ends joined up: motion begins at the player, his line begins where
+   the motion left him. Call after moving a player, or a motion node. */
+function syncAnchors(m) {
+  if (m.motion && m.motion.length) {
+    m.motion[0] = [m.x, m.y];
+    if (m.path && m.path.length) m.path[0] = lineStart(m);
+  } else if (m.path && m.path.length) {
+    m.path[0] = [m.x, m.y];
+  }
+}
+
 function addPoint(m, key, pt) {
   if (key === "path" && m.on) { m.path = resolvePath(m, current); delete m.on; }
-  if (!m[key] || !m[key].length) m[key] = key === "throw" ? [] : [[m.x, m.y]];
+  if (!m[key] || !m[key].length) {
+    m[key] = key === "throw" ? []
+           : key === "path"  ? [lineStart(m)]     // after the motion, not before it
+           : [[m.x, m.y]];
+  }
   const line = m[key];
   let best = -1, bestD = 26;
   for (let i = 0; i < line.length - 1; i++) {
@@ -1177,6 +1243,7 @@ function addPoint(m, key, pt) {
   }
   const idx = best >= 0 ? best + 1 : line.length;
   line.splice(idx, 0, pt);           // drop it into the line, or extend the end
+  if (key === "motion") syncAnchors(m);
   selPt = { key, idx };
 }
 
@@ -1187,8 +1254,9 @@ function deletePoint(key, idx) {
   if (key === "path" && m.on) { m.path = resolvePath(m, current); delete m.on; }
   m[key].splice(idx, 1);
   if (m[key].length < 2) delete m[key];   // an anchor on its own is not a line
+  syncAnchors(m);                         // losing the motion re-anchors his line
   selPt = null;
-  animateNext = false; render(current); animateNext = true;
+  animateNext = false; render(view()); animateNext = true;
   saveBook(); paintJobs(); paintEditor();
 }
 
@@ -1199,7 +1267,7 @@ field.addEventListener("pointerdown", evt => {
   if (!m) return;
   const pt = svgPt(evt);
   addPoint(m, activeLine, [clampX(pt[0]), clampY(pt[1])]);
-  animateNext = false; render(current); animateNext = true;
+  animateNext = false; render(view()); animateNext = true;
   saveBook(); paintJobs(); paintEditor();
 });
 
@@ -1265,7 +1333,7 @@ function selectSilently(pos) {
   if (selected === pos) return;
   selected = pos;
   selPt = null;
-  render(current);
+  render(view());
   paintJobs();
   paintEditor();
 }
@@ -1274,7 +1342,7 @@ function select(pos) {
   selected = (selected === pos) ? null : pos;
   selPt = null;
   animateNext = false;
-  render(current);
+  render(view());
   animateNext = true;
   paintJobs();
   paintEditor();
@@ -1285,7 +1353,8 @@ function paintJobs() {
   const head = document.getElementById("jobsHead");
   head.textContent = selected ? "Your job — " + posName(selected) : "Everybody’s job";
 
-  const men = selected ? current.men.filter(m => m.p === selected) : current.men.slice();
+  const shown = view();
+  const men = selected ? shown.men.filter(m => m.p === selected) : shown.men.slice();
   if (!selected) {
     const seq = ["QB","LH","RH","C","LG","RG","LE","RE"];
     const rank = p => { const i = seq.indexOf(p); return i < 0 ? 99 : i; };
@@ -1429,7 +1498,7 @@ function paintEditor() {
       const v = labIn.value.trim().toUpperCase().slice(0, 4);
       if (!v || current.men.some(z => z !== m && z.p === v)) { labIn.value = m.p; return; }
       m.p = v; selected = v;
-      buildChips(); animateNext = false; render(current); animateNext = true;
+      buildChips(); animateNext = false; render(view()); animateNext = true;
       paintJobs(); paintEditor(); touch();
     });
     row1.appendChild(mkField("Label", labIn));
@@ -1441,7 +1510,7 @@ function paintEditor() {
     ballIn.addEventListener("change", () => {
       if (ballIn.checked) current.men.forEach(z => { delete z.ball; });
       if (ballIn.checked) m.ball = true; else delete m.ball;
-      animateNext = false; render(current); animateNext = true;
+      animateNext = false; render(view()); animateNext = true;
       paintJobs(); paintEditor(); touch();
     });
     ballWrap.append(ballIn, document.createTextNode(" He ends up with the ball"));
@@ -1457,7 +1526,7 @@ function paintEditor() {
       b.addEventListener("click", () => {
         m.k = k;
         if (k === "none") { delete m.path; delete m.on; }
-        animateNext = false; render(current); animateNext = true;
+        animateNext = false; render(view()); animateNext = true;
         paintJobs(); paintEditor(); touch();
       });
       types.appendChild(b);
@@ -1473,7 +1542,7 @@ function paintEditor() {
       b.setAttribute("aria-pressed", String(activeLine === key));
       b.addEventListener("click", () => {
         activeLine = key; selPt = null;
-        animateNext = false; render(current); animateNext = true;
+        animateNext = false; render(view()); animateNext = true;
         paintEditor();
       });
       which.appendChild(b);
@@ -1492,17 +1561,18 @@ function paintEditor() {
       () => deletePoint(selPt.key, selPt.idx), "danger"));
     if (m.path) lines.appendChild(mkBtn("Erase his line", () => {
       delete m.path; delete m.on; selPt = null;
-      animateNext = false; render(current); animateNext = true;
+      animateNext = false; render(view()); animateNext = true;
       paintJobs(); paintEditor(); touch();
     }));
     if (m.motion) lines.appendChild(mkBtn("Erase his motion", () => {
       delete m.motion; selPt = null;
-      animateNext = false; render(current); animateNext = true;
+      syncAnchors(m);                    // his line comes back onto him
+      animateNext = false; render(view()); animateNext = true;
       paintEditor(); touch();
     }));
     if (m.throw) lines.appendChild(mkBtn("Erase the throw", () => {
       delete m.throw; selPt = null;
-      animateNext = false; render(current); animateNext = true;
+      animateNext = false; render(view()); animateNext = true;
       paintEditor(); touch();
     }));
     if (lines.children.length) box.appendChild(lines);
@@ -1525,7 +1595,7 @@ function paintEditor() {
     box.appendChild(mkBtn("Remove " + m.p + " from this play", () => {
       current.men = current.men.filter(z => z !== m);
       selected = null;
-      buildChips(); animateNext = false; render(current); animateNext = true;
+      buildChips(); animateNext = false; render(view()); animateNext = true;
       paintJobs(); paintEditor(); touch();
     }, "danger"));
   }
@@ -1539,7 +1609,7 @@ function paintEditor() {
     do { label = "P" + n++; } while (current.men.some(z => z.p === label));
     current.men.push({ p: label, x: 500, y: 460, k: "block", job: "" });
     selected = label;
-    buildChips(); animateNext = false; render(current); animateNext = true;
+    buildChips(); animateNext = false; render(view()); animateNext = true;
     paintJobs(); paintEditor(); touch();
   }));
   acts.appendChild(mkBtn("New play", () => {
@@ -1550,6 +1620,19 @@ function paintEditor() {
       men: clone(BUILTIN[5].men).map(z => ({ p:z.p, x:z.x, y:z.y, k:"block", job:"" }))
     };
     PLAYS.push(p); renumber(); buildRail(); touch(); load(p.id);
+  }));
+  acts.appendChild(mkBtn("Mirror this play for good", () => {
+    const i = PLAYS.findIndex(p => p.id === current.id);
+    PLAYS[i] = flipPlay(current);
+    if (selected) selected = FLIP_POS[selected] || selected;
+    touch(); buildRail(); buildChips(); load(PLAYS[i].id);
+  }));
+  acts.appendChild(mkBtn("Save the mirror as a new play", () => {
+    const q = flipPlay(current);
+    q.id = "u" + Date.now().toString(36);
+    delete q.verified;
+    PLAYS.splice(PLAYS.findIndex(p => p.id === current.id) + 1, 0, q);
+    renumber(); touch(); buildRail(); buildChips(); load(q.id);
   }));
   acts.appendChild(mkBtn(current.verified ? "Checked with Coach ✓" : "Mark as checked with Coach", () => {
     current.verified = !current.verified;
@@ -1648,13 +1731,15 @@ function paintEditor() {
 function setMode(on) {
   editing = on;
   selPt = null;
+  if (on) setFlipped(false);             // you always edit the play as stored
+  document.getElementById("flipBtn").hidden = on;
   document.body.classList.toggle("editing", editing);
   const b = field$("modeBtn");
   b.textContent = editing ? "Done editing" : "Edit plays";
   b.classList.toggle("primary", editing);
   stopRun();
   animateNext = false;
-  render(current);
+  render(view());
   animateNext = true;
   paintJobs();
   paintEditor();
@@ -1663,6 +1748,9 @@ function setMode(on) {
 function load(id) {
   stopRun();
   selPt = null;
+  flipped = false;                       // a new play comes up as it is drawn
+  const fb = document.getElementById("flipBtn");
+  if (fb) { fb.setAttribute("aria-pressed", "false"); fb.classList.remove("primary"); }
   current = PLAYS.find(p => p.id === id) || PLAYS[0];
   if (myPos && current.men.some(m => m.p === myPos)) selected = myPos;
   else if (!current.men.some(m => m.p === selected)) selected = null;
@@ -1696,7 +1784,7 @@ function load(id) {
     });
   }
 
-  render(current);
+  render(view());
   paintJobs();
   paintEditor();
   paintStaleBar();
@@ -1705,6 +1793,20 @@ function load(id) {
 document.getElementById("runBtn").addEventListener("click", runPlay);
 document.getElementById("resetBtn").addEventListener("click", stopRun);
 document.getElementById("modeBtn").addEventListener("click", () => setMode(!editing));
+document.getElementById("flipBtn").addEventListener("click", () => setFlipped(!flipped));
+
+function setFlipped(on) {
+  flipped = on;
+  stopRun();
+  const b = document.getElementById("flipBtn");
+  b.setAttribute("aria-pressed", String(flipped));
+  b.classList.toggle("primary", flipped);
+  const shown = view();
+  document.getElementById("playTitle").textContent = shown.name;
+  document.getElementById("playGist").textContent = shown.gist || "";
+  animateNext = false; render(shown); animateNext = true;
+  paintJobs();
+}
 
 document.addEventListener("keydown", e => {
   const t = e.target;
@@ -1713,7 +1815,7 @@ document.addEventListener("keydown", e => {
     e.preventDefault(); deletePoint(selPt.key, selPt.idx); return;
   }
   if (e.key === "Escape" && selPt) {
-    selPt = null; animateNext = false; render(current); animateNext = true; paintEditor(); return;
+    selPt = null; animateNext = false; render(view()); animateNext = true; paintEditor(); return;
   }
   const i = PLAYS.findIndex(p => p.id === current.id);
   if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); load(PLAYS[(i+1) % PLAYS.length].id); }
