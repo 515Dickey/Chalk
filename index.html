@@ -216,6 +216,23 @@
   }
   .job[data-ball="1"] .role { color: var(--ball); }
 
+  .where {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px; white-space: nowrap;
+    border: 1px solid var(--line); color: var(--text-faint);
+  }
+  .where.local { color: #1A1204; background: var(--ball); border-color: var(--ball); }
+
+  /* the one action the whole local workflow exists for — not buried */
+  .savebar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    padding: 14px 16px; border-radius: var(--radius);
+    background: rgba(255,176,32,.07);
+    border: 1px solid rgba(255,176,32,.3);
+  }
+  .savebar .msg { flex: 1; min-width: 22ch; font-size: 13.5px; color: #E8D5AE; }
+
   .stale {
     display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
     margin: 0 0 14px; padding: 11px 14px; border-radius: var(--radius);
@@ -344,6 +361,7 @@
   <header class="top">
     <div class="wordmark">Chalk<span class="dot">.</span></div>
     <div class="tagline">Finn&rsquo;s 5th grade playbook</div>
+    <span class="where" id="whereBadge"></span>
     <div class="spacer"></div>
     <button class="btn" id="modeBtn" type="button">Edit plays</button>
   </header>
@@ -486,243 +504,3423 @@ function resolvePath(m, play) {
    path: solid line.  motion: dashed pre-snap line.
    on:  which defender a block is aimed at (see DEFENSE ids). */
 const BUILTIN = [
-/* ---------------- PASS PLAYS ---------------- */
 {
-  id: "p1", group: "Pass Plays", name: "Go Right", n: 1,
-  gist: "Both halfbacks slide out flat as safe throws. The right end runs straight up the field — he is the one you are really throwing to.",
-  men: [
-    { p:"LE", x:150, y:300, k:"none", job:"The sheet is cut off right here. Ask Coach what the left end does on this one." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Pass block the down lineman over you. Stay in front of him and do not let him get past you." },
-    { p:"C",  x:500, y:300, k:"block", path:[[500,300],[500,276]], job:"Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Pass block the down lineman over you. Protect the quarterback's right side." },
-    { p:"RE", x:860, y:300, k:"route", ball:true, path:[[860,300],[858,130]], job:"Sprint straight up the field as fast as you can. The ball is coming to you — look back over your inside shoulder." },
-    { p:"LH", x:430, y:400, k:"route", path:[[430,400],[300,392],[192,372]], job:"Run flat toward the left sideline, then turn and look for the ball. You are the safe throw." },
-    { p:"RH", x:570, y:400, k:"route", path:[[570,400],[700,392],[792,366]], job:"Run flat toward the right sideline, then turn and look. You are the safe throw." },
-    { p:"QB", x:500, y:400, k:"hand", path:[[500,400],[500,452]], job:"Take the snap and drop back three steps. Look deep right first. If he is covered, dump it to a halfback in the flat." }
+  "id": "p1",
+  "group": "Pass Plays",
+  "name": "Go Right",
+  "n": 1,
+  "gist": "Both halfbacks slide out flat as safe throws. The right end runs straight up the field — he is the one you are really throwing to.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "route",
+      "job": "The sheet is cut off right here. Ask Coach what the left end does on this one.",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          151,
+          140
+        ]
+      ]
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          262
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Stay in front of him and do not let him get past you."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          276
+        ]
+      ],
+      "job": "Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          262
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Protect the quarterback's right side."
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "route",
+      "ball": true,
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          858,
+          130
+        ]
+      ],
+      "job": "Sprint straight up the field as fast as you can. The ball is coming to you — look back over your inside shoulder."
+    },
+    {
+      "p": "LH",
+      "x": 430,
+      "y": 400,
+      "k": "route",
+      "path": [
+        [
+          430,
+          400
+        ],
+        [
+          300,
+          392
+        ],
+        [
+          192,
+          372
+        ]
+      ],
+      "job": "Run flat toward the left sideline, then turn and look for the ball. You are the safe throw."
+    },
+    {
+      "p": "RH",
+      "x": 570,
+      "y": 400,
+      "k": "route",
+      "path": [
+        [
+          570,
+          400
+        ],
+        [
+          700,
+          392
+        ],
+        [
+          792,
+          366
+        ]
+      ],
+      "job": "Run flat toward the right sideline, then turn and look. You are the safe throw."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 400,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          400
+        ],
+        [
+          500,
+          452
+        ]
+      ],
+      "job": "Take the snap and drop back three steps. Look deep right first. If he is covered, dump it to a halfback in the flat.",
+      "throw": [
+        [
+          500,
+          448
+        ],
+        [
+          828,
+          127
+        ]
+      ]
+    }
   ],
-  pass: [[500,448],[700,300],[858,150]]
-},
-{
-  id: "p2", group: "Pass Plays", name: "Seam", n: 2,
-  gist: "The right end splits the middle of the field. Everybody else pulls a defender away from him.",
-  men: [
-    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[150,218],[268,214]], job:"Run up about ten steps, then break in toward the middle of the field." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Pass block the down lineman over you. Do not let him get past you." },
-    { p:"C",  x:500, y:300, k:"block", path:[[500,300],[500,276]], job:"Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Pass block the down lineman over you. Protect the quarterback's right side." },
-    { p:"RE", x:680, y:300, k:"route", ball:true, path:[[680,300],[672,212],[640,132]], job:"Run straight up the seam — the open grass between the linebacker and the safety. Ball is coming to you." },
-    { p:"RH", x:870, y:300, k:"route", path:[[870,300],[868,196],[812,192]], job:"Run up, then come back in. Pull the corner away from the seam." },
-    { p:"LH", x:790, y:352, k:"route", path:[[790,352],[788,236],[738,222]], job:"Run up the field, then lean in. Clear the linebacker out of the middle." },
-    { p:"QB", x:500, y:406, k:"hand", path:[[500,406],[500,452]], job:"Take the snap, drop back, and hit the right end up the middle before the safety can get over." }
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 368,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 632,
+      "y": 172
+    },
+    {
+      "id": "CL",
+      "x": 159,
+      "y": 218
+    },
+    {
+      "id": "CR",
+      "x": 842,
+      "y": 224
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ],
-  pass: [[500,448],[600,300],[644,152]]
+  "verified": true
 },
 {
-  id: "p3", group: "Pass Plays", name: "Crossers", n: 3,
-  gist: "Both ends run up the field and then angle in toward the middle, crossing behind the linebackers.",
-  men: [
-    { p:"LE", x:150, y:316, k:"route", ball:true, path:[[150,316],[156,206],[292,148]], job:"Run up the field, then angle in toward the middle. Keep running — the ball is coming to you across the field." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Pass block the down lineman over you. Stay in front of him." },
-    { p:"C",  x:500, y:300, k:"block", path:[[500,300],[500,276]], job:"Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Pass block the down lineman over you. Protect the right side." },
-    { p:"RH", x:700, y:300, k:"route", path:[[700,300],[700,190],[566,140]], job:"Run up the field, then angle in toward the middle. You cross behind the other end." },
-    { p:"RE", x:870, y:300, k:"route", path:[[870,300],[868,152]], job:"Straight up the sideline. Take the deep man with you and get him out of the way." },
-    { p:"LH", x:430, y:404, k:"block", path:[[430,404],[400,352]], job:"Stay in and block. Anybody who comes free is yours." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[500,452]], job:"Drop back and count one, two. Throw to whichever crosser comes open first." }
+  "id": "p2",
+  "group": "Pass Plays",
+  "name": "Seam",
+  "n": 2,
+  "gist": "The right end splits the middle of the field. Everybody else pulls a defender away from him.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          150,
+          218
+        ],
+        [
+          268,
+          214
+        ]
+      ],
+      "job": "Run up about ten steps, then break in toward the middle of the field."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          262
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Do not let him get past you."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          276
+        ]
+      ],
+      "job": "Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          262
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Protect the quarterback's right side."
+    },
+    {
+      "p": "RE",
+      "x": 677,
+      "y": 332,
+      "k": "route",
+      "ball": true,
+      "path": [
+        [
+          677,
+          332
+        ],
+        [
+          672,
+          212
+        ],
+        [
+          640,
+          132
+        ]
+      ],
+      "job": "Run straight up the seam — the open grass between the linebacker and the safety. Ball is coming to you."
+    },
+    {
+      "p": "RH",
+      "x": 870,
+      "y": 321,
+      "k": "route",
+      "path": [
+        [
+          870,
+          321
+        ],
+        [
+          868,
+          196
+        ],
+        [
+          812,
+          192
+        ]
+      ],
+      "job": "Run up, then come back in. Pull the corner away from the seam."
+    },
+    {
+      "p": "LH",
+      "x": 791,
+      "y": 338,
+      "k": "route",
+      "path": [
+        [
+          791,
+          338
+        ],
+        [
+          788,
+          236
+        ],
+        [
+          738,
+          222
+        ]
+      ],
+      "job": "Run up the field, then lean in. Clear the linebacker out of the middle."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 406,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          406
+        ],
+        [
+          500,
+          452
+        ]
+      ],
+      "job": "Take the snap, drop back, and hit the right end up the middle before the safety can get over.",
+      "throw": [
+        [
+          500,
+          448
+        ],
+        [
+          626,
+          142
+        ]
+      ]
+    }
   ],
-  pass: [[500,448],[380,280],[296,164]]
-},
-{
-  id: "p4", group: "Pass Plays", name: "Double In", n: 4,
-  gist: "Both ends run up and break in. Both halfbacks run straight up the seams to clear the middle out for them.",
-  men: [
-    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[150,204],[302,198]], job:"Run up about eight steps, then break hard to your right, toward the middle." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Pass block the down lineman over you. Do not let him past you." },
-    { p:"C",  x:500, y:300, k:"block", path:[[500,300],[500,276]], job:"Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Pass block the down lineman over you. Protect the right side." },
-    { p:"RE", x:860, y:300, k:"route", ball:true, path:[[860,300],[860,204],[706,198]], job:"Run up about eight steps, then break hard to your left, toward the middle. Look for the ball right away." },
-    { p:"RH", x:730, y:348, k:"route", path:[[730,348],[730,214]], job:"Run straight up the field. Pull the linebacker out of the way." },
-    { p:"LH", x:272, y:348, k:"route", path:[[272,348],[272,214]], job:"Run straight up the field. Pull the linebacker out of the way." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[500,452]], job:"Drop back three steps and throw it to whichever end breaks open first." }
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 498,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 672,
+      "y": 241
+    },
+    {
+      "id": "S",
+      "x": 771,
+      "y": 242
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 856,
+      "y": 180
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ],
-  pass: [[500,448],[660,280],[712,208]]
+  "verified": true
 },
-
-/* ---------------- QB RUN ---------------- */
 {
-  id: "q1", group: "QB Run", name: "QB Sweep Right", n: 5,
-  gist: "The two players on the right cross: the inside one goes out and kicks the corner toward the sideline, the outside one comes down and hits the linebacker. The quarterback runs through the gap they make.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,258]], job:"Block the corner across from you. Do not let him chase the play from behind." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Move him backward." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it. Nobody is over you, so go straight up to the middle linebacker." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Nobody gets inside of you." },
-    { p:"LH", x:680, y:326, k:"block", on:"CR", path:[[680,326],[800,240]], job:"Run at the corner and drive him toward the sideline. This is the kick-out — it makes the hole." },
-    { p:"RE", x:860, y:300, k:"block", on:"S",  path:[[860,300],[720,220]], job:"Come down inside and block the linebacker. Get your helmet in front of him." },
-    { p:"RH", x:570, y:404, k:"route", path:[[570,404],[646,414],[726,352]], job:"Lead the way. Run through the hole first and hit anybody standing in it." },
-    { p:"QB", x:470, y:404, k:"carry", ball:true, path:[[470,404],[520,452],[646,438],[750,344]], job:"Take the snap and sweep right. Stay behind the right half, get around the kick-out block, then turn up the field." }
+  "id": "p3",
+  "group": "Pass Plays",
+  "name": "Crossers",
+  "n": 3,
+  "gist": "Both ends run up the field and then angle in toward the middle, crossing behind the linebackers.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 66,
+      "y": 311,
+      "k": "route",
+      "ball": true,
+      "path": [
+        [
+          66,
+          311
+        ],
+        [
+          66,
+          129
+        ]
+      ],
+      "job": "Run up the field, then angle in toward the middle. Keep running — the ball is coming to you across the field."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          262
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Stay in front of him."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          276
+        ]
+      ],
+      "job": "Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          262
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Protect the right side."
+    },
+    {
+      "p": "RH",
+      "x": 700,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          700,
+          300
+        ],
+        [
+          700,
+          190
+        ],
+        [
+          566,
+          140
+        ]
+      ],
+      "job": "Run up the field, then angle in toward the middle. You cross behind the other end."
+    },
+    {
+      "p": "RE",
+      "x": 870,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          870,
+          300
+        ],
+        [
+          868,
+          152
+        ]
+      ],
+      "job": "Straight up the sideline. Take the deep man with you and get him out of the way."
+    },
+    {
+      "p": "LH",
+      "x": 170,
+      "y": 348,
+      "k": "route",
+      "job": "Stay in and block. Anybody who comes free is yours.",
+      "path": [
+        [
+          170,
+          348
+        ],
+        [
+          169,
+          220
+        ],
+        [
+          279,
+          145
+        ]
+      ]
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          500,
+          452
+        ]
+      ],
+      "job": "Drop back and count one, two. Throw to whichever crosser comes open first.",
+      "throw": [
+        [
+          500,
+          448
+        ],
+        [
+          303,
+          156
+        ]
+      ]
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 173,
+      "y": 223
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 632,
+      "y": 172
+    },
+    {
+      "id": "CL",
+      "x": 79,
+      "y": 189
+    },
+    {
+      "id": "CR",
+      "x": 842,
+      "y": 224
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
+  ],
+  "verified": true
+},
+{
+  "id": "p4",
+  "group": "Pass Plays",
+  "name": "Double In",
+  "n": 4,
+  "gist": "Both ends run up and break in. Both halfbacks run straight up the seams to clear the middle out for them.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          150,
+          204
+        ],
+        [
+          302,
+          198
+        ]
+      ],
+      "job": "Run up about eight steps, then break hard to your right, toward the middle."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          262
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Do not let him past you."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          276
+        ]
+      ],
+      "job": "Snap it, then stay at the line. Nobody is over you, so help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass — that is an illegal receiver penalty."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          262
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Protect the right side."
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "route",
+      "ball": true,
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          860,
+          204
+        ],
+        [
+          706,
+          198
+        ]
+      ],
+      "job": "Run up about eight steps, then break hard to your left, toward the middle. Look for the ball right away."
+    },
+    {
+      "p": "RH",
+      "x": 730,
+      "y": 348,
+      "k": "route",
+      "path": [
+        [
+          730,
+          348
+        ],
+        [
+          730,
+          214
+        ]
+      ],
+      "job": "Run straight up the field. Pull the linebacker out of the way."
+    },
+    {
+      "p": "LH",
+      "x": 272,
+      "y": 348,
+      "k": "route",
+      "path": [
+        [
+          272,
+          348
+        ],
+        [
+          272,
+          214
+        ]
+      ],
+      "job": "Run straight up the field. Pull the linebacker out of the way."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          500,
+          452
+        ]
+      ],
+      "job": "Drop back three steps and throw it to whichever end breaks open first.",
+      "throw": [
+        [
+          500,
+          448
+        ],
+        [
+          664,
+          195
+        ]
+      ]
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 273,
+      "y": 221
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 731,
+      "y": 216
+    },
+    {
+      "id": "CL",
+      "x": 153,
+      "y": 173
+    },
+    {
+      "id": "CR",
+      "x": 842,
+      "y": 224
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
+  ],
+  "verified": true
+},
+{
+  "id": "q1",
+  "group": "QB Run",
+  "name": "QB Sweep Right",
+  "n": 5,
+  "gist": "The two players on the right cross: the inside one goes out and kicks the corner toward the sideline, the outside one comes down and hits the linebacker. The quarterback runs through the gap they make.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "block",
+      "on": "CL",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          158,
+          258
+        ]
+      ],
+      "job": "Block the corner across from you. Do not let him chase the play from behind."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Move him backward."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it. Nobody is over you, so go straight up to the middle linebacker."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Nobody gets inside of you."
+    },
+    {
+      "p": "LH",
+      "x": 680,
+      "y": 326,
+      "k": "block",
+      "job": "Run at the corner and drive him toward the sideline. This is the kick-out — it makes the hole.",
+      "path": [
+        [
+          680,
+          326
+        ],
+        [
+          836,
+          193
+        ]
+      ]
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "block",
+      "job": "Come down inside and block the linebacker. Get your helmet in front of him.",
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          707,
+          228
+        ]
+      ]
+    },
+    {
+      "p": "RH",
+      "x": 570,
+      "y": 404,
+      "k": "block",
+      "path": [
+        [
+          570,
+          404
+        ],
+        [
+          646,
+          414
+        ],
+        [
+          726,
+          352
+        ],
+        [
+          744,
+          294
+        ],
+        [
+          726,
+          272
+        ]
+      ],
+      "job": "Lead the way. Run through the hole first and hit anybody standing in it."
+    },
+    {
+      "p": "QB",
+      "x": 497,
+      "y": 405,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          497,
+          405
+        ],
+        [
+          547,
+          447
+        ],
+        [
+          646,
+          438
+        ],
+        [
+          750,
+          344
+        ]
+      ],
+      "job": "Take the snap and sweep right. Stay behind the right half, get around the kick-out block, then turn up the field."
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 393,
+      "y": 174
+    },
+    {
+      "id": "M",
+      "x": 590,
+      "y": 176
+    },
+    {
+      "id": "S",
+      "x": 680,
+      "y": 223
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 855,
+      "y": 178
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
+  ],
+  "verified": true
+},
+{
+  "id": "q2",
+  "group": "QB Run",
+  "name": "QB Dive",
+  "n": 6,
+  "gist": "Straight up the gut. The guards take the two down linemen, the centre climbs to the middle linebacker, and both halfbacks arc out and block the outside linebackers.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          244,
+          226
+        ]
+      ],
+      "job": "Release upfield and block the first man you see. Do not stand still."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          451,
+          267
+        ],
+        [
+          435,
+          246
+        ]
+      ],
+      "job": "Block the down lineman over you. Drive him backward and seal the gap."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "on": "M",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          240
+        ]
+      ],
+      "job": "Snap it and go straight to the middle linebacker. He is the one who makes this tackle — get him blocked."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          546,
+          267
+        ],
+        [
+          563,
+          251
+        ]
+      ],
+      "job": "Block the down lineman over you. Drive him backward and seal the gap."
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          766,
+          226
+        ]
+      ],
+      "job": "Release upfield and block the first man you see."
+    },
+    {
+      "p": "LH",
+      "x": 430,
+      "y": 404,
+      "k": "block",
+      "on": "W",
+      "path": [
+        [
+          430,
+          404
+        ],
+        [
+          386,
+          346
+        ],
+        [
+          376,
+          260
+        ]
+      ],
+      "job": "Arc around to the outside, then come back in and block the linebacker on your side."
+    },
+    {
+      "p": "RH",
+      "x": 570,
+      "y": 404,
+      "k": "block",
+      "on": "S",
+      "path": [
+        [
+          570,
+          404
+        ],
+        [
+          618,
+          346
+        ],
+        [
+          630,
+          260
+        ]
+      ],
+      "job": "Arc around to the outside, then come back in and block the linebacker on your side."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          500,
+          312
+        ]
+      ],
+      "job": "Take the snap and run straight ahead, right behind the center. Get low, hold the ball tight, and fall forward."
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 368,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 632,
+      "y": 172
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 842,
+      "y": 224
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
+  ],
+  "verified": true
+},
+{
+  "id": "q3",
+  "group": "QB Run",
+  "name": "QB Draw",
+  "n": 7,
+  "gist": "It is supposed to look like a pass. The ends take off deep to pull everybody back, the line sets up like pass protection, then the quarterback runs through the middle.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          150,
+          162
+        ]
+      ],
+      "job": "Run straight up the field like a pass is coming. Take your man deep and get him out of there."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Set up like pass protection. Let the down lineman come to you, then wall him off to the outside."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "on": "M",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          240
+        ]
+      ],
+      "job": "Snap it and set like pass protection, then take the middle linebacker. If he runs past you the play is dead."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Set like pass protection, then wall your man to the outside. The hole is right behind you."
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          860,
+          162
+        ]
+      ],
+      "job": "Run straight up the field. Take your man with you."
+    },
+    {
+      "p": "LH",
+      "x": 430,
+      "y": 404,
+      "k": "route",
+      "job": "Check inside first, then block anybody coming free.",
+      "path": [
+        [
+          430,
+          404
+        ],
+        [
+          427,
+          363
+        ],
+        [
+          600,
+          363
+        ],
+        [
+          642,
+          278
+        ]
+      ]
+    },
+    {
+      "p": "RH",
+      "x": 570,
+      "y": 404,
+      "k": "fake",
+      "job": "Fake like the ball is coming to you, then block the edge. Sell the fake.",
+      "path": [
+        [
+          570,
+          404
+        ],
+        [
+          569,
+          341
+        ],
+        [
+          385,
+          343
+        ],
+        [
+          376,
+          222
+        ]
+      ]
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          542,
+          435
+        ],
+        [
+          664,
+          427
+        ],
+        [
+          725,
+          311
+        ]
+      ],
+      "job": "Show pass first — hold the ball up. Count one beat, then take off through the gap on the right."
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 368,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 632,
+      "y": 172
+    },
+    {
+      "id": "CL",
+      "x": 172,
+      "y": 190
+    },
+    {
+      "id": "CR",
+      "x": 846,
+      "y": 188
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
+  ],
+  "verified": true
+},
+{
+  "id": "q4",
+  "group": "QB Run",
+  "name": "QB Rollout Right",
+  "n": 8,
+  "coachLabel": "QR 2PO",
+  "gist": "The quarterback rolls out to the right with the option to run it or throw it. Everybody up front blocks in that direction.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          302,
+          190
+        ]
+      ],
+      "job": "Angle up and across toward the middle. You are the throwback if the roll gets stopped."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          262
+        ]
+      ],
+      "job": "Block the down lineman over you and push him toward the sideline."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it, then help to your right and stay at the line. This can turn into a pass, so do not go downfield."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          262
+        ]
+      ],
+      "job": "Block the down lineman over you. Do not let him cross your face."
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          860,
+          176
+        ]
+      ],
+      "job": "Straight up the sideline. Get deep and stay wide."
+    },
+    {
+      "p": "RH",
+      "x": 660,
+      "y": 330,
+      "k": "route",
+      "path": [
+        [
+          660,
+          330
+        ],
+        [
+          675,
+          215
+        ],
+        [
+          847,
+          218
+        ]
+      ],
+      "job": "Run up and out toward the corner. Give the quarterback somewhere to throw it."
+    },
+    {
+      "p": "LH",
+      "x": 561,
+      "y": 404,
+      "k": "block",
+      "path": [
+        [
+          561,
+          404
+        ],
+        [
+          705,
+          317
+        ],
+        [
+          677,
+          290
+        ]
+      ],
+      "job": "Block anybody chasing from the backside. Nobody catches the quarterback from behind."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          566,
+          448
+        ],
+        [
+          688,
+          438
+        ],
+        [
+          792,
+          388
+        ]
+      ],
+      "job": "Roll out to your right. Run it if the edge is open, throw it if the end covers you up. Keep your eyes downfield."
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 405,
+      "y": 170
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 664,
+      "y": 222
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 850,
+      "y": 186
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
+  ],
+  "verified": true
+},
+{
+  "id": "m1",
+  "group": "Motion",
+  "name": "Jet Sweep - Pre Snap",
+  "n": 9,
+  "gist": "The right end runs across the formation before the snap and keeps going as a decoy. The ball actually goes to the left half sweeping the same way.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 158,
+      "y": 307,
+      "k": "block",
+      "job": "Block the corner across from you and turn him inside. The ball is going outside of you.",
+      "path": [
+        [
+          158,
+          307
+        ],
+        [
+          347,
+          185
+        ]
+      ]
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "job": "Block the down lineman over you. Seal him inside.",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          393,
+          263
+        ],
+        [
+          417,
+          243
+        ]
+      ]
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it. Nobody is over you, so climb to the middle linebacker.",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          497,
+          254
+        ],
+        [
+          540,
+          247
+        ]
+      ]
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "job": "Block the down lineman over you. Cut him off — nobody chases from behind."
+    },
+    {
+      "p": "RE",
+      "x": 843,
+      "y": 302,
+      "k": "route",
+      "job": "Start moving left before the snap and do not stop. You never get the ball — your job is to take defenders with you.",
+      "path": [
+        [
+          843,
+          302
+        ],
+        [
+          841,
+          220
+        ],
+        [
+          791,
+          180
+        ]
+      ]
+    },
+    {
+      "p": "RH",
+      "x": 777,
+      "y": 347,
+      "k": "block",
+      "job": "Arc around to the left and block the linebacker on that side. Get out there early.",
+      "motion": [
+        [
+          777,
+          347
+        ],
+        [
+          299,
+          339
+        ]
+      ],
+      "path": [
+        [
+          299,
+          339
+        ],
+        [
+          182,
+          249
+        ]
+      ]
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "block",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          421,
+          341
+        ],
+        [
+          368,
+          294
+        ],
+        [
+          366,
+          111
+        ],
+        [
+          403,
+          101
+        ]
+      ],
+      "job": "Take the snap and hand it to the left half going left. Then get in the way of anybody chasing."
+    },
+    {
+      "p": "LH",
+      "x": 430,
+      "y": 404,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          430,
+          404
+        ],
+        [
+          350,
+          418
+        ],
+        [
+          240,
+          404
+        ],
+        [
+          178,
+          352
+        ]
+      ],
+      "job": "Take the handoff and run left. Get outside the block, then turn up the field. Do not cut back inside."
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 368,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 775,
+      "y": 223
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 843,
+      "y": 177
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ]
 },
 {
-  id: "q2", group: "QB Run", name: "QB Dive", n: 6,
-  gist: "Straight up the gut. The guards take the two down linemen, the centre climbs to the middle linebacker, and both halfbacks arc out and block the outside linebackers.",
-  men: [
-    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[244,226]], job:"Release upfield and block the first man you see. Do not stand still." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Drive him backward and seal the gap." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it and go straight to the middle linebacker. He is the one who makes this tackle — get him blocked." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Drive him backward and seal the gap." },
-    { p:"RE", x:860, y:300, k:"route", path:[[860,300],[766,226]], job:"Release upfield and block the first man you see." },
-    { p:"LH", x:430, y:404, k:"block", on:"W", path:[[430,404],[386,346],[376,260]], job:"Arc around to the outside, then come back in and block the linebacker on your side." },
-    { p:"RH", x:570, y:404, k:"block", on:"S", path:[[570,404],[618,346],[630,260]], job:"Arc around to the outside, then come back in and block the linebacker on your side." },
-    { p:"QB", x:500, y:404, k:"carry", ball:true, path:[[500,404],[500,312]], job:"Take the snap and run straight ahead, right behind the center. Get low, hold the ball tight, and fall forward." }
+  "id": "m2",
+  "group": "Motion",
+  "name": "Jet Sweep Left (Crack)",
+  "n": 10,
+  "gist": "The same sweep left, but blocked differently: the left end comes down on the linebacker and the right half kicks the outside man out. Run between those two blocks.",
+  "flag": "This one and Jet Sweep Left look almost the same on the sheet — the difference is the blocking angle. Worth asking Coach which is which.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "block",
+      "job": "Come down inside and crack the linebacker. Helmet in front — do not block him in the back.",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          384,
+          188
+        ]
+      ]
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it, then climb to the middle linebacker. You are uncovered — go get him."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Nobody chases from behind."
+    },
+    {
+      "p": "RE",
+      "x": 850,
+      "y": 322,
+      "k": "route",
+      "job": "Motion left before the snap and keep running. You are the decoy.",
+      "path": [
+        [
+          850,
+          322
+        ],
+        [
+          837,
+          243
+        ],
+        [
+          886,
+          148
+        ]
+      ]
+    },
+    {
+      "p": "RH",
+      "x": 443,
+      "y": 405,
+      "k": "block",
+      "path": [
+        [
+          443,
+          405
+        ],
+        [
+          156,
+          198
+        ]
+      ],
+      "job": "Kick out the corner — run at him and drive him toward the sideline. The hole opens up inside of you."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "carry",
+      "job": "Take the snap, hand it left, then block backside.",
+      "ball": true,
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          417,
+          421
+        ],
+        [
+          223,
+          211
+        ]
+      ]
+    },
+    {
+      "p": "LH",
+      "x": 212,
+      "y": 329,
+      "k": "route",
+      "job": "Take the handoff and aim between the crack block and the kick-out. Hit it fast and turn up.",
+      "motion": [
+        [
+          212,
+          329
+        ],
+        [
+          497,
+          365
+        ],
+        [
+          691,
+          360
+        ]
+      ],
+      "path": [
+        [
+          691,
+          360
+        ],
+        [
+          752,
+          223
+        ],
+        [
+          880,
+          221
+        ]
+      ]
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 211,
+      "y": 220
+    },
+    {
+      "id": "M",
+      "x": 411,
+      "y": 173
+    },
+    {
+      "id": "S",
+      "x": 607,
+      "y": 173
+    },
+    {
+      "id": "CL",
+      "x": 140,
+      "y": 181
+    },
+    {
+      "id": "CR",
+      "x": 842,
+      "y": 224
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ]
 },
 {
-  id: "q3", group: "QB Run", name: "QB Draw", n: 7,
-  gist: "It is supposed to look like a pass. The ends take off deep to pull everybody back, the line sets up like pass protection, then the quarterback runs through the middle.",
-  men: [
-    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[150,162]], job:"Run straight up the field like a pass is coming. Take your man deep and get him out of there." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Set up like pass protection. Let the down lineman come to you, then wall him off to the outside." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it and set like pass protection, then take the middle linebacker. If he runs past you the play is dead." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Set like pass protection, then wall your man to the outside. The hole is right behind you." },
-    { p:"RE", x:860, y:300, k:"route", path:[[860,300],[860,162]], job:"Run straight up the field. Take your man with you." },
-    { p:"LH", x:430, y:404, k:"block", path:[[430,404],[470,348]], job:"Check inside first, then block anybody coming free." },
-    { p:"RH", x:570, y:404, k:"fake", motion:[[570,404],[634,392]], job:"Fake like the ball is coming to you, then block the edge. Sell the fake." },
-    { p:"QB", x:500, y:404, k:"carry", ball:true, path:[[500,404],[500,438],[598,428],[678,336]], job:"Show pass first — hold the ball up. Count one beat, then take off through the gap on the right." }
+  "id": "m3",
+  "group": "Motion",
+  "name": "Jet Sweep Right",
+  "n": 11,
+  "gist": "Mirror of the sweep left. The right half comes in motion the other way, and the left half takes it around the right end.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "block",
+      "job": "Block down inside on the backside linebacker. Keep him from running the play down.",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          213,
+          261
+        ],
+        [
+          181,
+          238
+        ]
+      ]
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you and turn him inside."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it, then climb to the middle linebacker."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Seal him inside."
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "block",
+      "job": "Come down inside and block the linebacker. Keep the sideline open.",
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          826,
+          235
+        ],
+        [
+          849,
+          213
+        ]
+      ]
+    },
+    {
+      "p": "RH",
+      "x": 300,
+      "y": 344,
+      "k": "carry",
+      "job": "Motion across to the right before the snap, then kick out the corner. Drive him toward the sideline.",
+      "motion": [
+        [
+          300,
+          344
+        ],
+        [
+          472,
+          346
+        ]
+      ],
+      "ball": true,
+      "path": [
+        [
+          472,
+          346
+        ],
+        [
+          624,
+          344
+        ],
+        [
+          704,
+          308
+        ],
+        [
+          738,
+          222
+        ]
+      ]
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "job": "Take the snap and hand it to the left half going right. Then block backside.",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          499,
+          348
+        ]
+      ]
+    },
+    {
+      "p": "LH",
+      "x": 805,
+      "y": 345,
+      "k": "block",
+      "job": "Take the handoff and run right. Follow the motion man, get outside his block, and turn up the field.",
+      "path": [
+        [
+          805,
+          345
+        ],
+        [
+          756,
+          272
+        ],
+        [
+          770,
+          257
+        ]
+      ]
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 399,
+      "y": 174
+    },
+    {
+      "id": "M",
+      "x": 497,
+      "y": 171
+    },
+    {
+      "id": "S",
+      "x": 787,
+      "y": 233
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 860,
+      "y": 192
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ]
 },
 {
-  id: "q4", group: "QB Run", name: "QB Rollout Right", n: 8,
-  coachLabel: "QR 2PO",
-  gist: "The quarterback rolls out to the right with the option to run it or throw it. Everybody up front blocks in that direction.",
-  men: [
-    { p:"LE", x:150, y:300, k:"route", path:[[150,300],[302,190]], job:"Angle up and across toward the middle. You are the throwback if the roll gets stopped." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Block the down lineman over you and push him toward the sideline." },
-    { p:"C",  x:500, y:300, k:"block", on:"T2", path:[[500,300],[540,272]], job:"Snap it, then help to your right and stay at the line. This can turn into a pass, so do not go downfield." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Block the down lineman over you. Do not let him cross your face." },
-    { p:"RE", x:860, y:300, k:"route", path:[[860,300],[860,176]], job:"Straight up the sideline. Get deep and stay wide." },
-    { p:"RH", x:660, y:330, k:"route", path:[[660,330],[770,258],[848,254]], job:"Run up and out toward the corner. Give the quarterback somewhere to throw it." },
-    { p:"LH", x:430, y:404, k:"block", path:[[430,404],[474,350]], job:"Block anybody chasing from the backside. Nobody catches the quarterback from behind." },
-    { p:"QB", x:500, y:404, k:"carry", ball:true, path:[[500,404],[566,448],[688,438],[792,388]], job:"Roll out to your right. Run it if the edge is open, throw it if the end covers you up. Keep your eyes downfield." }
+  "id": "m4",
+  "group": "Motion",
+  "name": "Reverse Pass",
+  "n": 12,
+  "gist": "The longest motion on the sheet. The right end runs all the way across the formation and takes the pitch going left, while the left half fakes hard to the right.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "carry",
+      "job": "Block the corner and turn him inside. The ball is going around outside of you.",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          203,
+          363
+        ],
+        [
+          464,
+          364
+        ],
+        [
+          725,
+          404
+        ]
+      ],
+      "throw": [
+        [
+          726,
+          403
+        ],
+        [
+          700,
+          173
+        ]
+      ]
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it, then climb to the middle linebacker."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Nobody crosses behind you."
+    },
+    {
+      "p": "RE",
+      "x": 861,
+      "y": 300,
+      "k": "route",
+      "job": "Start way out right and motion all the way across before the snap. Take the pitch on the run and turn up the left sideline. Do not slow down.",
+      "path": [
+        [
+          861,
+          300
+        ],
+        [
+          873,
+          129
+        ]
+      ]
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "job": "Take the snap and pitch it out in front of the man coming across. Lead him — he is moving fast.",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          499,
+          367
+        ]
+      ]
+    },
+    {
+      "p": "LH",
+      "x": 207,
+      "y": 335,
+      "k": "route",
+      "job": "Fake like you have the ball and run right as hard as you can. If they follow you, the play works.",
+      "path": [
+        [
+          207,
+          335
+        ],
+        [
+          214,
+          249
+        ],
+        [
+          294,
+          156
+        ]
+      ]
+    },
+    {
+      "p": "RH",
+      "x": 803,
+      "y": 334,
+      "k": "route",
+      "job": "Block the backside linebacker. Nobody chases the ball carrier across the field.",
+      "motion": [
+        [
+          803,
+          334
+        ],
+        [
+          627,
+          343
+        ],
+        [
+          529,
+          343
+        ]
+      ],
+      "path": [
+        [
+          529,
+          343
+        ],
+        [
+          364,
+          335
+        ],
+        [
+          377,
+          176
+        ],
+        [
+          593,
+          171
+        ]
+      ],
+      "ball": true
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 218,
+      "y": 225
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 800,
+      "y": 222
+    },
+    {
+      "id": "CL",
+      "x": 150,
+      "y": 176
+    },
+    {
+      "id": "CR",
+      "x": 856,
+      "y": 176
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ]
 },
-
-/* ---------------- MOTION ---------------- */
 {
-  id: "m1", group: "Motion", name: "Jet Sweep Left", n: 9,
-  gist: "The right end runs across the formation before the snap and keeps going as a decoy. The ball actually goes to the left half sweeping the same way.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[156,258]], job:"Block the corner across from you and turn him inside. The ball is going outside of you." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Seal him inside." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it. Nobody is over you, so climb to the middle linebacker." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Cut him off — nobody chases from behind." },
-    { p:"RE", x:824, y:322, k:"fake", motion:[[824,322],[640,332],[452,338],[300,340]], job:"Start moving left before the snap and do not stop. You never get the ball — your job is to take defenders with you." },
-    { p:"RH", x:570, y:404, k:"block", on:"W", path:[[570,404],[468,382],[390,320]], job:"Arc around to the left and block the linebacker on that side. Get out there early." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[466,410]], job:"Take the snap and hand it to the left half going left. Then get in the way of anybody chasing." },
-    { p:"LH", x:430, y:404, k:"carry", ball:true, path:[[430,404],[350,418],[240,404],[178,352]], job:"Take the handoff and run left. Get outside the block, then turn up the field. Do not cut back inside." }
+  "id": "w1",
+  "group": "Power Run",
+  "name": "Power Right",
+  "n": 13,
+  "gist": "The left guard pulls all the way around to the right and leads through the hole. The wing kicks the corner out, and the right end releases to the safety.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "block",
+      "on": "CL",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          158,
+          258
+        ]
+      ],
+      "job": "Block the corner. Keep the backside clean."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          459,
+          340
+        ],
+        [
+          572,
+          340
+        ],
+        [
+          678,
+          260
+        ],
+        [
+          688,
+          214
+        ],
+        [
+          661,
+          191
+        ]
+      ],
+      "job": "Pull. Step back, run behind your own line to the right, and block the first linebacker past the hole. Stay low and get there fast."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          470,
+          286
+        ]
+      ],
+      "job": "Snap it, then block back to your left. The left guard is leaving — that gap is yours now."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Get movement."
+    },
+    {
+      "p": "LH",
+      "x": 438,
+      "y": 400,
+      "k": "carry",
+      "job": "Kick out the corner. Drive him toward the sideline — that is what makes the hole.",
+      "ball": true,
+      "path": [
+        [
+          438,
+          400
+        ],
+        [
+          446,
+          364
+        ],
+        [
+          557,
+          367
+        ],
+        [
+          655,
+          367
+        ],
+        [
+          725,
+          322
+        ],
+        [
+          728,
+          256
+        ]
+      ]
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "block",
+      "job": "Release downfield and block the safety. He is the last man who can stop this.",
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          658,
+          241
+        ]
+      ]
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          507,
+          375
+        ]
+      ],
+      "job": "Take the snap and hand it to the right half. Then carry out your fake to the left."
+    },
+    {
+      "p": "RH",
+      "x": 627,
+      "y": 331,
+      "k": "block",
+      "job": "Take the handoff and follow the pulling guard. Stay right on his hip and hit the hole the second it opens.",
+      "path": [
+        [
+          627,
+          331
+        ],
+        [
+          820,
+          242
+        ]
+      ]
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 368,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 629,
+      "y": 238
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 842,
+      "y": 224
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ]
 },
 {
-  id: "m2", group: "Motion", name: "Jet Sweep Left (Crack)", n: 10,
-  gist: "The same sweep left, but blocked differently: the left end comes down on the linebacker and the right half kicks the outside man out. Run between those two blocks.",
-  flag: "This one and Jet Sweep Left look almost the same on the sheet — the difference is the blocking angle. Worth asking Coach which is which.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"W", path:[[150,300],[268,244]], job:"Come down inside and crack the linebacker. Helmet in front — do not block him in the back." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then climb to the middle linebacker. You are uncovered — go get him." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Nobody chases from behind." },
-    { p:"RE", x:850, y:322, k:"fake", motion:[[850,322],[700,332],[566,338]], job:"Motion left before the snap and keep running. You are the decoy." },
-    { p:"RH", x:570, y:404, k:"block", on:"CL", path:[[570,404],[430,398],[280,330]], job:"Kick out the corner — run at him and drive him toward the sideline. The hole opens up inside of you." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[468,410]], job:"Take the snap, hand it left, then block backside." },
-    { p:"LH", x:430, y:404, k:"carry", ball:true, path:[[430,404],[344,412],[244,382],[196,300]], job:"Take the handoff and aim between the crack block and the kick-out. Hit it fast and turn up." }
+  "id": "w2",
+  "group": "Power Run",
+  "name": "Pitch Right",
+  "n": 14,
+  "gist": "The cross block. The inside man goes out and kicks the corner toward the sideline; the outside man comes down and cracks the linebacker. This is the cleanest play on the sheet.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "block",
+      "on": "CL",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          158,
+          262
+        ]
+      ],
+      "job": "Block the corner over you and stay on him the whole play."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Do not let him cross your face."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it. Nobody is over you — go straight up to the middle linebacker.",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          542,
+          261
+        ]
+      ]
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          649,
+          259
+        ]
+      ],
+      "job": "Block the down lineman over you. Get your helmet across him."
+    },
+    {
+      "p": "LH",
+      "x": 664,
+      "y": 338,
+      "k": "block",
+      "on": "CR",
+      "path": [
+        [
+          664,
+          338
+        ],
+        [
+          796,
+          262
+        ]
+      ],
+      "job": "Run at the corner and drive him toward the sideline. This is the kick-out block — the whole play needs it."
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          699,
+          187
+        ]
+      ],
+      "job": "Come down inside and block the linebacker. Cross in front of the kick-out man."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          540,
+          412
+        ]
+      ],
+      "job": "Take the snap and hand it to the right half, then fake left."
+    },
+    {
+      "p": "RH",
+      "x": 570,
+      "y": 412,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          570,
+          412
+        ],
+        [
+          652,
+          428
+        ],
+        [
+          762,
+          406
+        ],
+        [
+          836,
+          340
+        ]
+      ],
+      "job": "Take the handoff, run for the outside, get around the kick-out block, then turn straight up the field."
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 401,
+      "y": 168
+    },
+    {
+      "id": "M",
+      "x": 586,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 662,
+      "y": 240
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 842,
+      "y": 224
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ]
 },
 {
-  id: "m3", group: "Motion", name: "Jet Sweep Right", n: 11,
-  gist: "Mirror of the sweep left. The right half comes in motion the other way, and the left half takes it around the right end.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"W", path:[[150,300],[268,244]], job:"Block down inside on the backside linebacker. Keep him from running the play down." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you and turn him inside." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then climb to the middle linebacker." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Seal him inside." },
-    { p:"RE", x:860, y:300, k:"block", on:"S",  path:[[860,300],[724,222]], job:"Come down inside and block the linebacker. Keep the sideline open." },
-    { p:"RH", x:300, y:344, k:"block", on:"CR", motion:[[300,344],[480,340],[690,336]], path:[[690,336],[800,270]], job:"Motion across to the right before the snap, then kick out the corner. Drive him toward the sideline." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[540,410]], job:"Take the snap and hand it to the left half going right. Then block backside." },
-    { p:"LH", x:430, y:404, k:"carry", ball:true, path:[[430,404],[542,416],[664,380],[736,314]], job:"Take the handoff and run right. Follow the motion man, get outside his block, and turn up the field." }
+  "id": "w3",
+  "group": "Power Run",
+  "name": "Counter Right",
+  "n": 15,
+  "gist": "One step the wrong way, then back. The right half takes a jab step left before cutting hard right — it freezes the linebackers for just long enough.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          156,
+          244
+        ],
+        [
+          231,
+          137
+        ]
+      ],
+      "job": "Block the corner. Keep him off the backside."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Move him off the ball."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it, then climb to the middle linebacker. The jab step buys you the extra second — use it.",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          467,
+          261
+        ]
+      ]
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Get movement to your right."
+    },
+    {
+      "p": "RE",
+      "x": 860,
+      "y": 300,
+      "k": "block",
+      "on": "S",
+      "path": [
+        [
+          860,
+          300
+        ],
+        [
+          720,
+          222
+        ]
+      ],
+      "job": "Come down inside and wall off the linebacker. He must not get to the hole."
+    },
+    {
+      "p": "LH",
+      "x": 447,
+      "y": 412,
+      "k": "carry",
+      "job": "Motion in tight before the snap, then block the backside linebacker.",
+      "ball": true,
+      "path": [
+        [
+          447,
+          412
+        ],
+        [
+          452,
+          370
+        ],
+        [
+          505,
+          365
+        ],
+        [
+          654,
+          353
+        ],
+        [
+          737,
+          272
+        ]
+      ]
+    },
+    {
+      "p": "QB",
+      "x": 499,
+      "y": 404,
+      "k": "hand",
+      "job": "Take the snap and hand it to the right half after his jab step. Sell the fake left.",
+      "path": [
+        [
+          499,
+          404
+        ],
+        [
+          498,
+          367
+        ]
+      ]
+    },
+    {
+      "p": "RH",
+      "x": 549,
+      "y": 411,
+      "k": "route",
+      "job": "Take one hard step to your LEFT, then cut back right and go. The jab step is the whole play — make them believe it.",
+      "motion": [
+        [
+          549,
+          411
+        ],
+        [
+          539,
+          349
+        ],
+        [
+          363,
+          347
+        ]
+      ],
+      "path": [
+        [
+          363,
+          347
+        ],
+        [
+          235,
+          270
+        ]
+      ]
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 368,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 632,
+      "y": 172
+    },
+    {
+      "id": "CL",
+      "x": 158,
+      "y": 224
+    },
+    {
+      "id": "CR",
+      "x": 842,
+      "y": 224
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
   ]
 },
 {
-  id: "m4", group: "Motion", name: "Jet Across", n: 12,
-  gist: "The longest motion on the sheet. The right end runs all the way across the formation and takes the pitch going left, while the left half fakes hard to the right.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[156,258]], job:"Block the corner and turn him inside. The ball is going around outside of you." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then climb to the middle linebacker." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Nobody crosses behind you." },
-    { p:"RE", x:864, y:340, k:"carry", ball:true, motion:[[864,340],[652,346],[434,348],[268,346]], path:[[268,346],[204,318],[172,244]], job:"Start way out right and motion all the way across before the snap. Take the pitch on the run and turn up the left sideline. Do not slow down." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[420,394]], job:"Take the snap and pitch it out in front of the man coming across. Lead him — he is moving fast." },
-    { p:"LH", x:430, y:404, k:"fake", path:[[430,404],[562,414],[678,408]], job:"Fake like you have the ball and run right as hard as you can. If they follow you, the play works." },
-    { p:"RH", x:626, y:404, k:"block", on:"S", path:[[626,404],[634,320]], job:"Block the backside linebacker. Nobody chases the ball carrier across the field." }
-  ]
-},
-
-/* ---------------- POWER RUN ---------------- */
-{
-  id: "w1", group: "Power Run", name: "Power Right", n: 13,
-  gist: "The left guard pulls all the way around to the right and leads through the hole. The wing kicks the corner out, and the right end releases to the safety.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,258]], job:"Block the corner. Keep the backside clean." },
-    { p:"LG", x:430, y:300, k:"block", on:"S", path:[[430,300],[446,358],[570,360],[624,300]], job:"Pull. Step back, run behind your own line to the right, and block the first linebacker past the hole. Stay low and get there fast." },
-    { p:"C",  x:500, y:300, k:"block", on:"T1", path:[[500,300],[470,286]], job:"Snap it, then block back to your left. The left guard is leaving — that gap is yours now." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Get movement." },
-    { p:"LH", x:700, y:324, k:"block", on:"CR", path:[[700,324],[796,268]], job:"Kick out the corner. Drive him toward the sideline — that is what makes the hole." },
-    { p:"RE", x:860, y:300, k:"block", on:"FS", path:[[860,300],[700,180],[580,120]], job:"Release downfield and block the safety. He is the last man who can stop this." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[536,410]], job:"Take the snap and hand it to the right half. Then carry out your fake to the left." },
-    { p:"RH", x:570, y:404, k:"carry", ball:true, path:[[570,404],[604,424],[664,394],[700,322]], job:"Take the handoff and follow the pulling guard. Stay right on his hip and hit the hole the second it opens." }
-  ]
-},
-{
-  id: "w2", group: "Power Run", name: "Sweep Right", n: 14,
-  gist: "The cross block. The inside man goes out and kicks the corner toward the sideline; the outside man comes down and cracks the linebacker. This is the cleanest play on the sheet.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,262]], job:"Block the corner over you and stay on him the whole play." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Do not let him cross your face." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it. Nobody is over you — go straight up to the middle linebacker." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Get your helmet across him." },
-    { p:"LH", x:664, y:338, k:"block", on:"CR", path:[[664,338],[796,262]], job:"Run at the corner and drive him toward the sideline. This is the kick-out block — the whole play needs it." },
-    { p:"RE", x:860, y:300, k:"block", on:"S",  path:[[860,300],[716,220]], job:"Come down inside and block the linebacker. Cross in front of the kick-out man." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[540,412]], job:"Take the snap and hand it to the right half, then fake left." },
-    { p:"RH", x:570, y:412, k:"carry", ball:true, path:[[570,412],[652,428],[762,406],[836,340]], job:"Take the handoff, run for the outside, get around the kick-out block, then turn straight up the field." }
-  ]
-},
-{
-  id: "w3", group: "Power Run", name: "Counter Right", n: 15,
-  gist: "One step the wrong way, then back. The right half takes a jab step left before cutting hard right — it freezes the linebackers for just long enough.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,258]], job:"Block the corner. Keep him off the backside." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,258]], job:"Block the down lineman over you. Move him off the ball." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then climb to the middle linebacker. The jab step buys you the extra second — use it." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,258]], job:"Block the down lineman over you. Get movement to your right." },
-    { p:"RE", x:860, y:300, k:"block", on:"S",  path:[[860,300],[720,222]], job:"Come down inside and wall off the linebacker. He must not get to the hole." },
-    { p:"LH", x:300, y:344, k:"block", on:"W", motion:[[300,344],[398,348]], path:[[398,348],[386,280]], job:"Motion in tight before the snap, then block the backside linebacker." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[546,412]], job:"Take the snap and hand it to the right half after his jab step. Sell the fake left." },
-    { p:"RH", x:536, y:412, k:"carry", ball:true, path:[[536,412],[478,448],[606,452],[672,412],[694,330]], job:"Take one hard step to your LEFT, then cut back right and go. The jab step is the whole play — make them believe it." }
-  ]
-},
-{
-  id: "w4", group: "Power Run", name: "Reverse", n: 16,
-  coachLabel: "reverse",
-  gist: "The right end motions left to pull the defense that way. The ball ends up with the left half running all the way back to the right.",
-  men: [
-    { p:"LE", x:150, y:300, k:"block", on:"CL", path:[[150,300],[158,258]], job:"Block the corner and hold it. Give the reverse time to develop behind you." },
-    { p:"LH", x:236, y:352, k:"carry", ball:true, path:[[236,352],[356,398],[522,404],[664,372],[736,272]], job:"You get the ball coming back the other way. Be patient at first, let them chase the fake, then get to the right sideline and go." },
-    { p:"LG", x:430, y:300, k:"block", on:"T1", path:[[430,300],[430,262]], job:"Block the down lineman over you and hold him. The ball is coming back this way." },
-    { p:"C",  x:500, y:300, k:"block", on:"M",  path:[[500,300],[500,240]], job:"Snap it, then take the middle linebacker. Hold your block a long time — the ball comes back late." },
-    { p:"RG", x:570, y:300, k:"block", on:"T2", path:[[570,300],[570,262]], job:"Block the down lineman over you and hold your block a long time." },
-    { p:"RE", x:864, y:328, k:"fake", motion:[[864,328],[762,346],[692,352]], job:"Motion left before the snap and keep running left. Sell it — the defense has to follow you or this does not work." },
-    { p:"QB", x:500, y:404, k:"hand", path:[[500,404],[446,398]], job:"Take the snap, fake left, then hand the ball to the left half coming back to the right." },
-    { p:"RH", x:626, y:404, k:"block", on:"CR", path:[[626,404],[770,320]], job:"Block the corner on the right edge and hold it. The ball is coming to your side late." }
-  ]
+  "id": "w4",
+  "group": "Power Run",
+  "name": "Reverse",
+  "n": 16,
+  "coachLabel": "reverse",
+  "gist": "The right end motions left to pull the defense that way. The ball ends up with the left half running all the way back to the right.",
+  "men": [
+    {
+      "p": "LE",
+      "x": 150,
+      "y": 300,
+      "k": "route",
+      "job": "Block the corner and hold it. Give the reverse time to develop behind you.",
+      "path": [
+        [
+          150,
+          300
+        ],
+        [
+          156,
+          241
+        ],
+        [
+          133,
+          126
+        ]
+      ]
+    },
+    {
+      "p": "LH",
+      "x": 211,
+      "y": 338,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          211,
+          338
+        ],
+        [
+          356,
+          398
+        ],
+        [
+          522,
+          404
+        ],
+        [
+          664,
+          372
+        ],
+        [
+          736,
+          272
+        ]
+      ],
+      "job": "You get the ball coming back the other way. Be patient at first, let them chase the fake, then get to the right sideline and go."
+    },
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "on": "T1",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          262
+        ]
+      ],
+      "job": "Block the down lineman over you and hold him. The ball is coming back this way."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "job": "Snap it, then take the middle linebacker. Hold your block a long time — the ball comes back late.",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          509,
+          220
+        ],
+        [
+          481,
+          212
+        ]
+      ]
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "on": "T2",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          262
+        ]
+      ],
+      "job": "Block the down lineman over you and hold your block a long time."
+    },
+    {
+      "p": "RE",
+      "x": 864,
+      "y": 328,
+      "k": "route",
+      "job": "Motion left before the snap and keep running left. Sell it — the defense has to follow you or this does not work.",
+      "path": [
+        [
+          864,
+          328
+        ],
+        [
+          863,
+          215
+        ],
+        [
+          900,
+          130
+        ]
+      ]
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "block",
+      "job": "Take the snap, fake left, then hand the ball to the left half coming back to the right.",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          493,
+          354
+        ],
+        [
+          654,
+          318
+        ],
+        [
+          624,
+          255
+        ]
+      ]
+    },
+    {
+      "p": "RH",
+      "x": 807,
+      "y": 352,
+      "k": "route",
+      "job": "Block the corner on the right edge and hold it. The ball is coming to your side late.",
+      "motion": [
+        [
+          807,
+          352
+        ],
+        [
+          539,
+          352
+        ]
+      ],
+      "path": [
+        [
+          539,
+          352
+        ],
+        [
+          429,
+          351
+        ],
+        [
+          390,
+          363
+        ],
+        [
+          321,
+          309
+        ],
+        [
+          248,
+          194
+        ]
+      ]
+    }
+  ],
+  "def": [
+    {
+      "id": "T1",
+      "x": 430,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 570,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 209,
+      "y": 217
+    },
+    {
+      "id": "M",
+      "x": 500,
+      "y": 168
+    },
+    {
+      "id": "S",
+      "x": 810,
+      "y": 215
+    },
+    {
+      "id": "CL",
+      "x": 154,
+      "y": 183
+    },
+    {
+      "id": "CR",
+      "x": 856,
+      "y": 189
+    },
+    {
+      "id": "FS",
+      "x": 500,
+      "y": 84
+    }
+  ],
+  "verified": true
 }
 ];
 
@@ -740,7 +3938,7 @@ let bookIsStale = false;   // a newer playbook shipped than the one on this devi
 
 /* Bumped by scripts/bake.mjs every time a verified playbook is baked in.
    A device holding an older one gets offered the update. */
-const BUILTIN_VERSION = 1;
+const BUILTIN_VERSION = 3;
 
 /* The throw used to belong to the play. It belongs to whoever throws it, so
    that it edits like every other line. Old playbooks get moved across here. */
@@ -1437,6 +4635,32 @@ function paintEditor() {
   if (!editing) return;
   editorEl.textContent = "";
 
+  /* --- saving back to the source, first thing, only on the local copy --- */
+  if (IS_LOCAL) {
+    const bar = document.createElement("div");
+    bar.className = "savebar";
+    const msg = document.createElement("div");
+    msg.className = "msg";
+    msg.textContent = "Your changes are saved on this device as you go. Write them into the source file when you want them to reach everybody.";
+    bar.appendChild(mkBtn("Save to the source file", async () => {
+      msg.textContent = "Saving…";
+      try {
+        const res = await fetch("/__save", {
+          method: "PUT", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ v: 2, plays: PLAYS })
+        });
+        const j = await res.json();
+        msg.textContent = j.ok
+          ? `Saved ${j.count} plays into index.html (${j.checked} checked with Coach). Version ${j.from} → ${j.to}. Commit and push to put it live.`
+          : "Not saved — " + j.error;
+      } catch (e) {
+        msg.textContent = "Could not reach the local server. Is scripts/serve.mjs still running?";
+      }
+    }, "primary"));
+    bar.appendChild(msg);
+    editorEl.appendChild(bar);
+  }
+
   /* --- the play itself --- */
   const head = document.createElement("div");
   head.className = "edgrid";
@@ -1668,32 +4892,6 @@ function paintEditor() {
   note.textContent = "Everything is saved on this device only. Copy the text below to keep a copy or to move the playbook to another tablet — paste it back in here and press Load.";
   det.appendChild(note);
 
-  /* Running from scripts/serve.mjs: write straight into index.html, so a
-     verified playbook can be committed and pushed to the real site. */
-  if (IS_LOCAL) {
-    const bake = document.createElement("div");
-    bake.className = "edtypes";
-    const bnote = document.createElement("p");
-    bnote.className = "edhint";
-    bnote.textContent = "You are running the local copy, so you can write this straight into index.html as the new default for everybody. Commit and push afterwards.";
-    bake.appendChild(mkBtn("Save to the source file", async () => {
-      bnote.textContent = "Saving…";
-      try {
-        const res = await fetch("/__save", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ v: 2, plays: PLAYS })
-        });
-        const j = await res.json();
-        bnote.textContent = j.ok
-          ? `Saved ${j.count} plays into index.html (${j.checked} checked with Coach). Playbook version ${j.from} → ${j.to}. Now commit and push.`
-          : "Not saved — " + j.error;
-      } catch (e) {
-        bnote.textContent = "Could not reach the local server. Is scripts/serve.mjs still running?";
-      }
-    }, "primary"));
-    det.append(bake, bnote);
-  }
 
   const ta = document.createElement("textarea");
   ta.rows = 6; ta.className = "json";
@@ -1843,6 +5041,15 @@ function paintStaleBar() {
   d.append(t, yes, no);
   bar.appendChild(d);
 }
+
+/* Say plainly which copy this is. Three of them exist — the local one, the
+   live site and the artifact — and only the local one can write to the repo. */
+(function whereAmI() {
+  const b = document.getElementById("whereBadge");
+  b.textContent = IS_LOCAL ? "Local copy · can save to source" : "Live";
+  b.classList.toggle("local", IS_LOCAL);
+  b.title = location.origin;
+})();
 
 buildRail();
 buildChips();
