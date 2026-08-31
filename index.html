@@ -216,6 +216,89 @@
   }
   .job[data-ball="1"] .role { color: var(--ball); }
 
+  /* ---------- huddle ---------- */
+  /* The whole screen is the play. One small button brings back the controls. */
+  body.huddle { overflow: hidden; }
+  body.huddle .top, body.huddle .rail, body.huddle .playhead, body.huddle .gist,
+  body.huddle #playFlag, body.huddle .controls, body.huddle .jobs,
+  body.huddle .editor, body.huddle .key, body.huddle #staleBar { display: none !important; }
+
+  /* Lift the field clean out of the page layout rather than fighting it, and
+     let the SVG letterbox its own viewBox inside the viewport. */
+  body.huddle .fieldwrap {
+    position: fixed; inset: 0; z-index: 20;
+    border: none; border-radius: 0; background: var(--ink);
+  }
+  body.huddle svg.field { width: 100%; height: 100%; }
+
+  .hud { position: absolute; inset: 0; pointer-events: none; }
+  .hud > * { pointer-events: auto; }
+
+  .hCall {
+    position: absolute; top: 14px; left: 18px;
+    font-family: Anton, "Arial Narrow", sans-serif;
+    font-size: clamp(20px, 3.4vw, 38px); line-height: 1;
+    letter-spacing: .03em; text-transform: uppercase;
+    color: var(--chalk); text-shadow: 0 2px 10px rgba(0,0,0,.55);
+  }
+  .hCall .side { color: var(--ball); }
+
+  .hMenu {
+    position: absolute; top: 12px; right: 12px;
+    width: 46px; height: 46px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--chalk); background: rgba(14,20,22,.55);
+    border: 1px solid rgba(244,247,242,.22);
+  }
+  .hMenu:hover { background: rgba(14,20,22,.8); }
+  .hMenu[aria-expanded="true"] { background: var(--ball); color: #1A1204; border-color: var(--ball); }
+
+  .hRibbon {
+    position: absolute; top: 66px; right: 12px;
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 8px; border-radius: 12px;
+    background: rgba(14,20,22,.88);
+    border: 1px solid rgba(244,247,242,.18);
+  }
+  .hBtn {
+    min-width: 132px; padding: 13px 18px; border-radius: 9px;
+    font-size: 17px; font-weight: 500; text-align: left;
+    color: var(--text); background: var(--panel-2);
+    border: 1px solid var(--line);
+  }
+  .hBtn:hover { border-color: #4E6A62; }
+  .hBtn.primary { background: var(--ball); border-color: var(--ball); color: #1A1204; font-weight: 600; }
+  .hBtn.quit { margin-top: 6px; background: transparent; }
+  .hBtn[aria-pressed="true"] { background: var(--ball); border-color: var(--ball); color: #1A1204; }
+
+  /* ---------- the play picker ---------- */
+  .picker {
+    position: fixed; inset: 0; z-index: 40;
+    background: var(--ink);
+    display: flex; flex-direction: column;
+  }
+  .pickerHead {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid var(--line); flex: none;
+  }
+  .pickerBody { overflow-y: auto; padding: 16px 20px 40px; }
+  .pickerGroup { margin-bottom: 20px; }
+  .pickerGroup > h3 { margin: 0 0 10px; }
+  .pickerGrid {
+    display: grid; gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  }
+  .pcell {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 8px; border-radius: 10px;
+    background: var(--panel); border: 1px solid var(--line);
+    text-align: left; color: var(--text);
+  }
+  .pcell:hover { border-color: var(--ball); }
+  .pcell[aria-current="true"] { border-color: var(--ball); box-shadow: inset 0 0 0 1px var(--ball); }
+  .pcell .nm { font-size: 14.5px; font-weight: 500; line-height: 1.25; }
+  .pcell svg { display: block; width: 100%; height: auto; border-radius: 6px; }
+
   .where {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
     font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
@@ -363,6 +446,7 @@
     <div class="tagline">Finn&rsquo;s 5th grade playbook</div>
     <span class="where" id="whereBadge"></span>
     <div class="spacer"></div>
+    <button class="btn" id="huddleBtn" type="button">Huddle</button>
     <button class="btn" id="modeBtn" type="button">Edit plays</button>
   </header>
   <datalist id="groupList">
@@ -386,6 +470,22 @@
         <div id="staleBar"></div>
         <div class="fieldwrap">
           <svg class="field" id="field" viewBox="0 44 1000 470" role="img" aria-label="Play diagram"></svg>
+
+          <div class="hud" id="hud" hidden>
+            <div class="hCall" id="hCall"></div>
+            <button class="hMenu" id="hMenuBtn" type="button" aria-expanded="false" aria-label="Show the play controls">
+              <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="hRibbon" id="hRibbon" hidden>
+              <button class="hBtn" id="hSelect" type="button">Select</button>
+              <button class="hBtn" id="hFlip" type="button">Flip</button>
+              <button class="hBtn primary" id="hRun" type="button">Run</button>
+              <button class="hBtn" id="hReset" type="button">Reset</button>
+              <button class="hBtn quit" id="hExit" type="button">Exit</button>
+            </div>
+          </div>
         </div>
 
         <div class="playhead">
@@ -441,6 +541,14 @@
       </div>
     </main>
   </div>
+</div>
+
+<div class="picker" id="picker" hidden>
+  <div class="pickerHead">
+    <span class="eyebrow">Pick a play</span>
+    <button class="btn" id="pickerClose" type="button">Close</button>
+  </div>
+  <div class="pickerBody" id="pickerBody"></div>
 </div>
 
 <script>
@@ -4307,7 +4415,8 @@ function runPlay() {
       if (a.runPath) move(a.node, a.runPath, ease(t2));
     });
     if (t < total) anim = requestAnimationFrame(frame);
-    else { anim = null; btn.disabled = false; btn.textContent = "Run it again"; scratch.remove(); }
+    else { anim = null; btn.disabled = false; btn.textContent = "Run it again"; scratch.remove();
+           if (huddle) paintHuddle(); }
   }
   const ease = x => x < .5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2;
   anim = requestAnimationFrame(frame);
@@ -4319,6 +4428,156 @@ function stopRun() {
   const b = document.getElementById("runBtn");
   b.disabled = false; b.textContent = "Run it";
 }
+
+/* ============================================================
+   HUDDLE MODE
+   The whole screen is the play. A coach picks it out of a grid of
+   thumbnails, shows it, runs it, and puts it away.
+   ============================================================ */
+
+/* A thumbnail is drawn, not shrunk. Shrinking the real diagram turns sixteen
+   glyphs and a dozen block lines into grey mush; what a coach actually
+   recognises at this size is the shape of the ball's path, so that is what
+   gets the ink. */
+function thumb(play) {
+  const s = el("svg", { viewBox: "0 44 1000 470", "aria-hidden": "true" });
+  s.appendChild(el("rect", { x:0, y:0, width:1000, height:640, fill:"#2C6B41" }));
+  for (let y = -20; y < 640; y += 160)
+    s.appendChild(el("rect", { x:0, y, width:1000, height:80, fill:"#27603A" }));
+  s.appendChild(el("line", { x1:0, y1:300, x2:1000, y2:300,
+                             stroke:"#FFFFFF", "stroke-opacity":".38", "stroke-width":5 }));
+
+  play.def.forEach(d =>
+    s.appendChild(el("circle", { cx:d.x, cy:d.y, r:15, fill:"#93A5A0", "fill-opacity":".65" })));
+  play.men.forEach(m =>
+    s.appendChild(el("circle", { cx:m.x, cy:m.y, r:17, fill:"#F4F7F2", "fill-opacity":".9" })));
+
+  play.men.forEach(m => {
+    if (m.motion && m.motion.length > 1)
+      s.appendChild(el("path", { d: ptsToD(m.motion), fill:"none", stroke:C.motion,
+        "stroke-width":9, "stroke-dasharray":"22 18", "stroke-linecap":"round", opacity:".85" }));
+  });
+  // On a run that is the carrier's path; on a pass it is the target's route,
+  // which is the only thing that tells four pass plays apart at this size.
+  play.men.forEach(m => {
+    if (!(m.k === "carry" || m.k === "hand" || m.ball)) return;
+    const pts = resolvePath(m, play);
+    if (!pts || pts.length < 2) return;
+    const w = m.k === "carry" ? 20 : m.k === "hand" ? 11 : 15;
+    s.appendChild(el("path", { d: ptsToD(pts), fill:"none", stroke:C.ball,
+      "stroke-width": w, "stroke-linecap":"round", "stroke-linejoin":"round" }));
+    if (m.k !== "hand") s.appendChild(arrowHead(pts, C.ball, m.k === "carry" ? 60 : 46));
+  });
+  const thrower = play.men.find(m => m.throw && m.throw.length > 1);
+  if (thrower) {
+    s.appendChild(el("path", { d: ptsToD(thrower.throw), fill:"none", stroke:C.ball,
+      "stroke-width":8, "stroke-dasharray":"4 26", "stroke-linecap":"round" }));
+    s.appendChild(arrowHead(thrower.throw, C.ball, 42));
+  }
+  return s;
+}
+
+let huddle = false, ribbonOpen = false, wakeLock = null;
+
+async function keepAwake(on) {
+  try {
+    if (on) {
+      if ("wakeLock" in navigator && !wakeLock) {
+        wakeLock = await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release", () => { wakeLock = null; });
+      }
+    } else if (wakeLock) { const w = wakeLock; wakeLock = null; await w.release(); }
+  } catch (e) { /* unsupported, or the browser refused — the app still works */ }
+}
+// the browser drops the lock whenever the tablet is locked or backgrounded
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && huddle) keepAwake(true);
+});
+
+function paintHuddle() {
+  const shown = view();
+  const call = document.getElementById("hCall");
+  call.textContent = "";
+  const nm = document.createElement("span");
+  nm.textContent = shown.name;
+  call.appendChild(nm);
+  if (flipped) {
+    const f = document.createElement("span");
+    f.className = "side";
+    f.textContent = " · flipped";
+    call.appendChild(f);
+  }
+  document.getElementById("hFlip").setAttribute("aria-pressed", String(flipped));
+  document.getElementById("hRun").textContent = anim ? "Running…" : "Run";
+}
+
+function setRibbon(open) {
+  ribbonOpen = open;
+  document.getElementById("hRibbon").hidden = !open;
+  document.getElementById("hMenuBtn").setAttribute("aria-expanded", String(open));
+}
+
+function setHuddle(on) {
+  huddle = on;
+  if (on && editing) setMode(false);
+  document.body.classList.toggle("huddle", on);
+  document.getElementById("hud").hidden = !on;
+  if (!on) closePicker();
+  setRibbon(false);
+  keepAwake(on);
+  stopRun();
+  if (location.hash === "#huddle" !== on) {
+    history.replaceState(null, "", on ? "#huddle" : location.pathname + location.search);
+  }
+  animateNext = false; render(view()); animateNext = true;
+  // carry the flip across the boundary, and re-sync whichever mode's button
+  if (on) paintHuddle(); else setFlipped(flipped);
+}
+
+/* ---------- the picker ---------- */
+const pickerEl = document.getElementById("picker");
+
+function openPicker() {
+  pickerEl.hidden = false;
+  const body = document.getElementById("pickerBody");
+  body.textContent = "";
+  const names = ORDER.concat(PLAYS.map(p => p.group).filter(g => !ORDER.includes(g)));
+  [...new Set(names)].forEach(g => {
+    const inGroup = PLAYS.filter(p => p.group === g);
+    if (!inGroup.length) return;
+    const sec = document.createElement("div");
+    sec.className = "pickerGroup";
+    const h = document.createElement("h3");
+    h.className = "eyebrow";
+    h.textContent = g;
+    const grid = document.createElement("div");
+    grid.className = "pickerGrid";
+    inGroup.forEach(p => {
+      const cell = document.createElement("button");
+      cell.className = "pcell";
+      cell.type = "button";
+      cell.setAttribute("aria-current", String(p.id === current.id));
+      const nm = document.createElement("span");
+      nm.className = "nm";
+      nm.textContent = p.name;
+      cell.append(nm, thumb(p));
+      cell.addEventListener("click", () => { closePicker(); load(p.id); });
+      grid.appendChild(cell);
+    });
+    sec.append(h, grid);
+    body.appendChild(sec);
+  });
+}
+function closePicker() { pickerEl.hidden = true; }
+
+document.getElementById("huddleBtn").addEventListener("click", () => setHuddle(true));
+document.getElementById("hMenuBtn").addEventListener("click", () => setRibbon(!ribbonOpen));
+document.getElementById("hSelect").addEventListener("click", openPicker);
+document.getElementById("hFlip").addEventListener("click", () => { setFlipped(!flipped); paintHuddle(); });
+document.getElementById("hRun").addEventListener("click", () => { runPlay(); paintHuddle(); });
+document.getElementById("hReset").addEventListener("click", () => { stopRun(); paintHuddle(); });
+document.getElementById("hExit").addEventListener("click", () => setHuddle(false));
+document.getElementById("pickerClose").addEventListener("click", closePicker);
 
 /* ============================================================
    DRAGGING AND DRAWING
@@ -4986,6 +5245,7 @@ function load(id) {
   paintJobs();
   paintEditor();
   paintStaleBar();
+  if (huddle) paintHuddle();
 }
 
 document.getElementById("runBtn").addEventListener("click", runPlay);
@@ -5009,6 +5269,8 @@ function setFlipped(on) {
 document.addEventListener("keydown", e => {
   const t = e.target;
   if (t && t.matches && t.matches("input, textarea")) return;
+  if (e.key === "Escape" && !pickerEl.hidden) { closePicker(); return; }
+  if (e.key === "Escape" && huddle) { setHuddle(false); return; }
   if (editing && selPt && (e.key === "Delete" || e.key === "Backspace")) {
     e.preventDefault(); deletePoint(selPt.key, selPt.idx); return;
   }
@@ -5055,6 +5317,9 @@ buildRail();
 buildChips();
 load(PLAYS[0].id);
 paintStaleBar();
+
+// the coach's tablet can be bookmarked straight into the huddle
+if (location.hash === "#huddle") setHuddle(true);
 
 /* Keep working on a field with no signal. Fails quietly anywhere a service
    worker is not allowed, which includes the preview sandbox. */
