@@ -624,7 +624,7 @@ const BUILTIN = [
       "x": 150,
       "y": 300,
       "k": "route",
-      "job": "The sheet is cut off right here. Ask Coach what the left end does on this one.",
+      "job": "Run straight up the field. Take the man over you deep and clear that side out.",
       "path": [
         [
           150,
@@ -641,15 +641,14 @@ const BUILTIN = [
       "x": 430,
       "y": 300,
       "k": "block",
-      "on": "T1",
       "path": [
         [
           430,
           300
         ],
         [
-          430,
-          262
+          431,
+          272
         ]
       ],
       "job": "Pass block the down lineman over you. Stay in front of him and do not let him get past you."
@@ -676,15 +675,14 @@ const BUILTIN = [
       "x": 570,
       "y": 300,
       "k": "block",
-      "on": "T2",
       "path": [
         [
           570,
           300
         ],
         [
-          570,
-          262
+          571,
+          273
         ]
       ],
       "job": "Pass block the down lineman over you. Protect the quarterback's right side."
@@ -854,15 +852,14 @@ const BUILTIN = [
       "x": 430,
       "y": 300,
       "k": "block",
-      "on": "T1",
       "path": [
         [
           430,
           300
         ],
         [
-          430,
-          262
+          431,
+          273
         ]
       ],
       "job": "Pass block the down lineman over you. Do not let him get past you."
@@ -889,15 +886,14 @@ const BUILTIN = [
       "x": 570,
       "y": 300,
       "k": "block",
-      "on": "T2",
       "path": [
         [
           570,
           300
         ],
         [
-          570,
-          262
+          572,
+          274
         ]
       ],
       "job": "Pass block the down lineman over you. Protect the quarterback's right side."
@@ -1050,7 +1046,6 @@ const BUILTIN = [
       "x": 66,
       "y": 311,
       "k": "route",
-      "ball": true,
       "path": [
         [
           66,
@@ -1061,22 +1056,21 @@ const BUILTIN = [
           129
         ]
       ],
-      "job": "Run up the field, then angle in toward the middle. Keep running — the ball is coming to you across the field."
+      "job": "Run straight up the sideline. Take the deep man with you and pull him out of the middle."
     },
     {
       "p": "LG",
       "x": 430,
       "y": 300,
       "k": "block",
-      "on": "T1",
       "path": [
         [
           430,
           300
         ],
         [
-          430,
-          262
+          429,
+          274
         ]
       ],
       "job": "Pass block the down lineman over you. Stay in front of him."
@@ -1103,7 +1097,6 @@ const BUILTIN = [
       "x": 570,
       "y": 300,
       "k": "block",
-      "on": "T2",
       "path": [
         [
           570,
@@ -1111,7 +1104,7 @@ const BUILTIN = [
         ],
         [
           570,
-          262
+          272
         ]
       ],
       "job": "Pass block the down lineman over you. Protect the right side."
@@ -1135,7 +1128,7 @@ const BUILTIN = [
           140
         ]
       ],
-      "job": "Run up the field, then angle in toward the middle. You cross behind the other end."
+      "job": "Run up the field, then angle in toward the middle. You cross behind the left half."
     },
     {
       "p": "RE",
@@ -1159,7 +1152,7 @@ const BUILTIN = [
       "x": 170,
       "y": 348,
       "k": "route",
-      "job": "Stay in and block. Anybody who comes free is yours.",
+      "job": "Run up the field, then angle in toward the middle. Keep running — the ball is coming to you.",
       "path": [
         [
           170,
@@ -1173,7 +1166,8 @@ const BUILTIN = [
           279,
           145
         ]
-      ]
+      ],
+      "ball": true
     },
     {
       "p": "QB",
@@ -1764,19 +1758,22 @@ const BUILTIN = [
       "x": 430,
       "y": 404,
       "k": "block",
-      "on": "W",
       "path": [
         [
           430,
           404
         ],
         [
-          386,
-          346
+          473,
+          291
         ],
         [
-          376,
-          260
+          460,
+          214
+        ],
+        [
+          435,
+          192
         ]
       ],
       "job": "Arc around to the outside, then come back in and block the linebacker on your side."
@@ -1786,19 +1783,22 @@ const BUILTIN = [
       "x": 570,
       "y": 404,
       "k": "block",
-      "on": "S",
       "path": [
         [
           570,
           404
         ],
         [
-          618,
-          346
+          532,
+          282
         ],
         [
-          630,
-          260
+          532,
+          222
+        ],
+        [
+          570,
+          189
         ]
       ],
       "job": "Arc around to the outside, then come back in and block the linebacker on your side."
@@ -2285,7 +2285,7 @@ const BUILTIN = [
   "group": "Motion",
   "name": "Jet Sweep - Pre Snap",
   "n": 9,
-  "gist": "The right end runs across the formation before the snap and keeps going as a decoy. The ball actually goes to the left half sweeping the same way.",
+  "gist": "The right half comes across in motion before the snap. The ball goes to the left half sweeping the same way.",
   "men": [
     {
       "p": "LE",
@@ -2358,7 +2358,7 @@ const BUILTIN = [
       "x": 843,
       "y": 302,
       "k": "route",
-      "job": "Start moving left before the snap and do not stop. You never get the ball — your job is to take defenders with you.",
+      "job": "Release straight up the field and take the deep man with you.",
       "path": [
         [
           843,
@@ -2505,7 +2505,7 @@ const BUILTIN = [
   "group": "Motion",
   "name": "Jet Sweep Left (Crack)",
   "n": 10,
-  "gist": "The same sweep left, but blocked differently: the left end comes down on the linebacker and the right half kicks the outside man out. Run between those two blocks.",
+  "gist": "Misdirection. The left half motions right and keeps going as a decoy; the quarterback keeps it and runs left behind the crack block.",
   "flag": "This one and Jet Sweep Left look almost the same on the sheet — the difference is the blocking angle. Worth asking Coach which is which.",
   "men": [
     {
@@ -2573,7 +2573,7 @@ const BUILTIN = [
       "x": 850,
       "y": 322,
       "k": "route",
-      "job": "Motion left before the snap and keep running. You are the decoy.",
+      "job": "Release straight up the field and take the deep man with you.",
       "path": [
         [
           850,
@@ -2611,7 +2611,7 @@ const BUILTIN = [
       "x": 500,
       "y": 404,
       "k": "carry",
-      "job": "Take the snap, hand it left, then block backside.",
+      "job": "Take the snap and keep it. Run left behind the crack block and turn up the field.",
       "ball": true,
       "path": [
         [
@@ -2633,7 +2633,7 @@ const BUILTIN = [
       "x": 212,
       "y": 329,
       "k": "route",
-      "job": "Take the handoff and aim between the crack block and the kick-out. Hit it fast and turn up.",
+      "job": "Motion to your right before the snap and keep running that way. You never get the ball — your job is to take defenders with you.",
       "motion": [
         [
           212,
@@ -2719,7 +2719,7 @@ const BUILTIN = [
       "x": 150,
       "y": 300,
       "k": "block",
-      "job": "Block down inside on the backside linebacker. Keep him from running the play down.",
+      "job": "Block the corner on your side. Do not let him chase the play down from behind.",
       "path": [
         [
           150,
@@ -2783,7 +2783,7 @@ const BUILTIN = [
       "x": 860,
       "y": 300,
       "k": "block",
-      "job": "Come down inside and block the linebacker. Keep the sideline open.",
+      "job": "Come down inside and block the corner. Keep the sideline open.",
       "path": [
         [
           860,
@@ -2804,7 +2804,7 @@ const BUILTIN = [
       "x": 300,
       "y": 344,
       "k": "carry",
-      "job": "Motion across to the right before the snap, then kick out the corner. Drive him toward the sideline.",
+      "job": "Start in motion to your right before the snap and keep going. Take the handoff on the run, get outside, and turn up the field. Do not slow down.",
       "motion": [
         [
           300,
@@ -2857,7 +2857,7 @@ const BUILTIN = [
       "x": 805,
       "y": 345,
       "k": "block",
-      "job": "Take the handoff and run right. Follow the motion man, get outside his block, and turn up the field.",
+      "job": "Block the linebacker on your side and turn him inside. The ball is coming around outside of you.",
       "path": [
         [
           805,
@@ -3240,7 +3240,7 @@ const BUILTIN = [
       "x": 438,
       "y": 400,
       "k": "carry",
-      "job": "Kick out the corner. Drive him toward the sideline — that is what makes the hole.",
+      "job": "Take the handoff and follow the pulling guard. Stay right on his hip and hit the hole the second it opens.",
       "ball": true,
       "path": [
         [
@@ -3274,7 +3274,7 @@ const BUILTIN = [
       "x": 860,
       "y": 300,
       "k": "block",
-      "job": "Release downfield and block the safety. He is the last man who can stop this.",
+      "job": "Come down inside and block the linebacker. Get your helmet in front of him.",
       "path": [
         [
           860,
@@ -3308,7 +3308,7 @@ const BUILTIN = [
       "x": 627,
       "y": 331,
       "k": "block",
-      "job": "Take the handoff and follow the pulling guard. Stay right on his hip and hit the hole the second it opens.",
+      "job": "Kick out the corner. Run at him and drive him toward the sideline — that is what makes the hole.",
       "path": [
         [
           627,
@@ -3589,7 +3589,7 @@ const BUILTIN = [
           137
         ]
       ],
-      "job": "Block the corner. Keep him off the backside."
+      "job": "Release upfield and take the deep man with you."
     },
     {
       "p": "LG",
@@ -3667,7 +3667,7 @@ const BUILTIN = [
       "x": 447,
       "y": 412,
       "k": "carry",
-      "job": "Motion in tight before the snap, then block the backside linebacker.",
+      "job": "Take the handoff and run right. Follow your blockers outside, then turn up the field.",
       "ball": true,
       "path": [
         [
@@ -3714,7 +3714,7 @@ const BUILTIN = [
       "x": 549,
       "y": 411,
       "k": "route",
-      "job": "Take one hard step to your LEFT, then cut back right and go. The jab step is the whole play — make them believe it.",
+      "job": "Motion to your left before the snap and keep running that way. You never get the ball — take defenders with you.",
       "motion": [
         [
           549,
@@ -3797,7 +3797,7 @@ const BUILTIN = [
       "x": 150,
       "y": 300,
       "k": "route",
-      "job": "Block the corner and hold it. Give the reverse time to develop behind you.",
+      "job": "Release upfield and take the deep man with you.",
       "path": [
         [
           150,
@@ -3926,7 +3926,7 @@ const BUILTIN = [
       "x": 500,
       "y": 404,
       "k": "block",
-      "job": "Take the snap, fake left, then hand the ball to the left half coming back to the right.",
+      "job": "Take the snap, fake left, then hand it to the left half coming back the other way. Then get upfield and block.",
       "path": [
         [
           500,
@@ -3951,7 +3951,7 @@ const BUILTIN = [
       "x": 807,
       "y": 352,
       "k": "route",
-      "job": "Block the corner on the right edge and hold it. The ball is coming to your side late.",
+      "job": "Motion to your left before the snap and keep going that way. Take a defender with you and stay out of the ball carrier's way.",
       "motion": [
         [
           807,
@@ -4046,7 +4046,7 @@ let bookIsStale = false;   // a newer playbook shipped than the one on this devi
 
 /* Bumped by scripts/bake.mjs every time a verified playbook is baked in.
    A device holding an older one gets offered the update. */
-const BUILTIN_VERSION = 3;
+const BUILTIN_VERSION = 6;
 
 /* The throw used to belong to the play. It belongs to whoever throws it, so
    that it edits like every other line. Old playbooks get moved across here. */
@@ -5230,7 +5230,6 @@ function load(id) {
     const notes = [];
     if (current.coachLabel) notes.push(["Coach wrote “" + current.coachLabel + "” on this one.",
       current.coachLabel === "reverse" ? "It is the only play he named." : "Probably a two-point play — worth asking."].join(" "));
-    if (current.group === "Pass Plays") notes.push("The left edge of the pass plays was cut off on our copy of the sheet.");
     if (current.flag) notes.push(current.flag);
     notes.forEach(text => {
       const d = document.createElement("div");
