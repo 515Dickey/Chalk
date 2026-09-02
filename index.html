@@ -4033,6 +4033,834 @@ const BUILTIN = [
     }
   ],
   "verified": true
+},
+{
+  "id": "trpass",
+  "group": "Pass Plays",
+  "name": "Trips Pass",
+  "flag": "New from Coach's second sheet — this is a first pass off the sketch. The numbers and the exact spacing need your eye before anybody learns it.",
+  "gist": "Three receivers bunched to the right, all working back inside at three different depths. The quarterback throws whichever one the defence leaves.",
+  "def": [
+    {
+      "id": "T1",
+      "x": 452,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 548,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 424,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 520,
+      "y": 170
+    },
+    {
+      "id": "S",
+      "x": 700,
+      "y": 228
+    },
+    {
+      "id": "CR",
+      "x": 806,
+      "y": 214
+    },
+    {
+      "id": "CL",
+      "x": 886,
+      "y": 208
+    },
+    {
+      "id": "FS",
+      "x": 580,
+      "y": 92
+    }
+  ],
+  "men": [
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Do not let him get past you."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          254
+        ]
+      ],
+      "job": "Snap it, then stay at the line. Help either guard and pick up anyone who blitzes. Do NOT go downfield on a pass."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Pass block the down lineman over you. Protect the quarterback's right side."
+    },
+    {
+      "p": "1",
+      "x": 442,
+      "y": 412,
+      "k": "block",
+      "path": [
+        [
+          442,
+          412
+        ],
+        [
+          418,
+          358
+        ]
+      ],
+      "job": "Stay in and block. Anybody who comes free is yours — do not release."
+    },
+    {
+      "p": "2",
+      "x": 700,
+      "y": 314,
+      "k": "route",
+      "path": [
+        [
+          700,
+          314
+        ],
+        [
+          700,
+          226
+        ],
+        [
+          610,
+          218
+        ]
+      ],
+      "job": "You are the shallow one. Run up about five steps and break back in toward the middle. Turn and look right away."
+    },
+    {
+      "p": "3",
+      "x": 792,
+      "y": 300,
+      "k": "route",
+      "ball": true,
+      "path": [
+        [
+          792,
+          300
+        ],
+        [
+          790,
+          172
+        ],
+        [
+          662,
+          160
+        ]
+      ],
+      "job": "You are the deep one. Get up the field, then break in hard across the middle. The ball is coming to you — keep running."
+    },
+    {
+      "p": "4",
+      "x": 880,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          880,
+          300
+        ],
+        [
+          878,
+          244
+        ],
+        [
+          796,
+          236
+        ]
+      ],
+      "job": "Run up a few steps and break in underneath. Drag your man inside and clear the sideline out."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          500,
+          452
+        ]
+      ],
+      "throw": [
+        [
+          498,
+          448
+        ],
+        [
+          606,
+          300
+        ],
+        [
+          678,
+          168
+        ]
+      ],
+      "job": "Take the snap and drop back. Look for number 3 coming across the middle first. If he is covered, number 2 is your safe throw underneath."
+    }
+  ],
+  "n": 17
+},
+{
+  "id": "trqbrun",
+  "group": "QB Run",
+  "name": "Trips QB Run",
+  "flag": "New from Coach's second sheet — this is a first pass off the sketch. The numbers and the exact spacing need your eye before anybody learns it.",
+  "gist": "The trips pull three defenders to the right, then block back inside. The quarterback keeps it and runs straight up behind his own line, into the space they just left.",
+  "def": [
+    {
+      "id": "T1",
+      "x": 452,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 548,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 424,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 520,
+      "y": 170
+    },
+    {
+      "id": "S",
+      "x": 700,
+      "y": 228
+    },
+    {
+      "id": "CR",
+      "x": 806,
+      "y": 214
+    },
+    {
+      "id": "CL",
+      "x": 886,
+      "y": 208
+    },
+    {
+      "id": "FS",
+      "x": 580,
+      "y": 92
+    }
+  ],
+  "men": [
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you and drive him backward."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          254
+        ]
+      ],
+      "job": "Snap it and block straight ahead. This is your play — move him off the ball."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Seal him to your right and do not let him cross your face."
+    },
+    {
+      "p": "1",
+      "x": 442,
+      "y": 412,
+      "k": "block",
+      "path": [
+        [
+          442,
+          412
+        ],
+        [
+          478,
+          356
+        ],
+        [
+          506,
+          300
+        ]
+      ],
+      "job": "Lead the way. Run through the hole first and hit the first linebacker you see."
+    },
+    {
+      "p": "2",
+      "x": 700,
+      "y": 314,
+      "k": "block",
+      "path": [
+        [
+          700,
+          314
+        ],
+        [
+          622,
+          240
+        ]
+      ],
+      "job": "Come down inside and block the linebacker. Helmet in front — do not block him in the back."
+    },
+    {
+      "p": "3",
+      "x": 792,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          792,
+          300
+        ],
+        [
+          704,
+          224
+        ]
+      ],
+      "job": "Come down inside and block the next man over. Your job is to wall him off from the middle."
+    },
+    {
+      "p": "4",
+      "x": 880,
+      "y": 300,
+      "k": "route",
+      "path": [
+        [
+          880,
+          300
+        ],
+        [
+          878,
+          208
+        ]
+      ],
+      "job": "Release straight up the field and take the deep man with you. Get him out of the picture."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          522,
+          368
+        ],
+        [
+          548,
+          286
+        ],
+        [
+          552,
+          198
+        ]
+      ],
+      "job": "Take the snap and run straight up behind your own line. Get low, hold the ball tight, and fall forward."
+    }
+  ],
+  "n": 18
+},
+{
+  "id": "wrscreen",
+  "group": "Pass Plays",
+  "name": "WR Screen",
+  "flag": "New from Coach's second sheet — this is a first pass off the sketch. The numbers and the exact spacing need your eye before anybody learns it.",
+  "gist": "A quick throw out to the inside receiver, with the right guard released in front of him. The other two receivers block the men over them and it becomes a run.",
+  "def": [
+    {
+      "id": "T1",
+      "x": 452,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 548,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 424,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 520,
+      "y": 170
+    },
+    {
+      "id": "S",
+      "x": 700,
+      "y": 228
+    },
+    {
+      "id": "CR",
+      "x": 806,
+      "y": 214
+    },
+    {
+      "id": "CL",
+      "x": 886,
+      "y": 208
+    },
+    {
+      "id": "FS",
+      "x": 580,
+      "y": 92
+    }
+  ],
+  "men": [
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          262
+        ]
+      ],
+      "job": "Show pass for one count, then block your man. Do not chase — let him come to you."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          262
+        ]
+      ],
+      "job": "Snap it, then show pass. Stay at the line and pick up anyone who blitzes."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          612,
+          346
+        ],
+        [
+          700,
+          332
+        ],
+        [
+          744,
+          254
+        ]
+      ],
+      "job": "Show pass for one count, then release outside and get in front of number 2. Block the first man who comes at him — you are his lead."
+    },
+    {
+      "p": "1",
+      "x": 442,
+      "y": 412,
+      "k": "block",
+      "path": [
+        [
+          442,
+          412
+        ],
+        [
+          418,
+          358
+        ]
+      ],
+      "job": "Stay in and block. Nobody gets to the quarterback before he can throw it."
+    },
+    {
+      "p": "2",
+      "x": 716,
+      "y": 340,
+      "k": "route",
+      "ball": true,
+      "path": [
+        [
+          716,
+          340
+        ],
+        [
+          756,
+          302
+        ],
+        [
+          792,
+          224
+        ]
+      ],
+      "job": "Take one step upfield, then come back and catch it behind the line. Catch it first, THEN look — the guard is coming to block for you. Follow him."
+    },
+    {
+      "p": "3",
+      "x": 800,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          800,
+          300
+        ],
+        [
+          810,
+          240
+        ]
+      ],
+      "job": "Block the man over you and turn him toward the sideline. Number 2 is coming up inside of you."
+    },
+    {
+      "p": "4",
+      "x": 882,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          882,
+          300
+        ],
+        [
+          890,
+          238
+        ]
+      ],
+      "job": "Block the man over you. Do not let him come back inside — that is where the ball is going."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          500,
+          440
+        ]
+      ],
+      "throw": [
+        [
+          500,
+          436
+        ],
+        [
+          606,
+          398
+        ],
+        [
+          700,
+          356
+        ]
+      ],
+      "job": "Take the snap and throw it right away, out to number 2 behind the line. Do not wait — this only works if it is quick."
+    }
+  ],
+  "n": 19
+},
+{
+  "id": "hbdive",
+  "group": "Power Run",
+  "name": "HB Dive",
+  "flag": "New from Coach's second sheet — this is a first pass off the sketch. The numbers and the exact spacing need your eye before anybody learns it.",
+  "gist": "The simplest play in the book. The back takes it straight up the middle behind the centre while the trips pull three defenders away to the right.",
+  "def": [
+    {
+      "id": "T1",
+      "x": 452,
+      "y": 238
+    },
+    {
+      "id": "T2",
+      "x": 548,
+      "y": 238
+    },
+    {
+      "id": "W",
+      "x": 424,
+      "y": 172
+    },
+    {
+      "id": "M",
+      "x": 520,
+      "y": 170
+    },
+    {
+      "id": "S",
+      "x": 700,
+      "y": 228
+    },
+    {
+      "id": "CR",
+      "x": 806,
+      "y": 214
+    },
+    {
+      "id": "CL",
+      "x": 886,
+      "y": 208
+    },
+    {
+      "id": "FS",
+      "x": 580,
+      "y": 92
+    }
+  ],
+  "men": [
+    {
+      "p": "LG",
+      "x": 430,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          430,
+          300
+        ],
+        [
+          430,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Drive him backward and seal the gap."
+    },
+    {
+      "p": "C",
+      "x": 500,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          500,
+          300
+        ],
+        [
+          500,
+          254
+        ]
+      ],
+      "job": "Snap it and drive straight ahead. Everything on this play goes right behind you."
+    },
+    {
+      "p": "RG",
+      "x": 570,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          570,
+          300
+        ],
+        [
+          570,
+          258
+        ]
+      ],
+      "job": "Block the down lineman over you. Drive him backward and seal the gap."
+    },
+    {
+      "p": "1",
+      "x": 448,
+      "y": 414,
+      "k": "carry",
+      "ball": true,
+      "path": [
+        [
+          448,
+          414
+        ],
+        [
+          476,
+          378
+        ],
+        [
+          502,
+          300
+        ],
+        [
+          504,
+          232
+        ]
+      ],
+      "job": "Take the handoff and run straight up the middle, right behind the centre. Get low, hold the ball tight in both arms, and fall forward."
+    },
+    {
+      "p": "2",
+      "x": 700,
+      "y": 314,
+      "k": "block",
+      "path": [
+        [
+          700,
+          314
+        ],
+        [
+          626,
+          242
+        ]
+      ],
+      "job": "Come down inside and block the linebacker before he can get to the middle."
+    },
+    {
+      "p": "3",
+      "x": 792,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          792,
+          300
+        ],
+        [
+          716,
+          234
+        ]
+      ],
+      "job": "Come down inside and block the next man over. Keep him away from the hole."
+    },
+    {
+      "p": "4",
+      "x": 880,
+      "y": 300,
+      "k": "block",
+      "path": [
+        [
+          880,
+          300
+        ],
+        [
+          836,
+          242
+        ]
+      ],
+      "job": "Block the man over you and keep him out there. He must not chase this down from behind."
+    },
+    {
+      "p": "QB",
+      "x": 500,
+      "y": 404,
+      "k": "hand",
+      "path": [
+        [
+          500,
+          404
+        ],
+        [
+          470,
+          406
+        ]
+      ],
+      "job": "Take the snap and hand it to number 1 going straight ahead. Then carry out a fake to your right."
+    }
+  ],
+  "n": 20
 }
 ];
 
@@ -4050,7 +4878,7 @@ let bookIsStale = false;   // a newer playbook shipped than the one on this devi
 
 /* Bumped by scripts/bake.mjs every time a verified playbook is baked in.
    A device holding an older one gets offered the update. */
-const BUILTIN_VERSION = 8;
+const BUILTIN_VERSION = 9;
 
 /* The throw used to belong to the play. It belongs to whoever throws it, so
    that it edits like every other line. Old playbooks get moved across here. */
