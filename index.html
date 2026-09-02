@@ -561,9 +561,13 @@
    Downfield is UP (smaller y). We attack toward the top.
    ============================================================ */
 
+/* The four skill players are numbered rather than named, so a play call can
+   name the target out loud: "P2 left, 3". Left to right across the base
+   formation. The three interior linemen keep their names — nobody calls a
+   play to a guard. */
 const POS_NAMES = {
-  LE: "Left End",  LG: "Left Guard", C: "Center",    RG: "Right Guard",
-  RE: "Right End", QB: "Quarterback", LH: "Left Half", RH: "Right Half"
+  "1": "Number 1", "2": "Number 2", "3": "Number 3", "4": "Number 4",
+  QB: "Quarterback", LG: "Left Guard", C: "Center", RG: "Right Guard"
 };
 const posName = c => POS_NAMES[c] || c;
 
@@ -617,10 +621,10 @@ const BUILTIN = [
   "group": "Pass Plays",
   "name": "Go Right",
   "n": 1,
-  "gist": "Both halfbacks slide out flat as safe throws. The right end runs straight up the field — he is the one you are really throwing to.",
+  "gist": "Both halfbacks slide out flat as safe throws. Number 4 runs straight up the field — he is the one you are really throwing to.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "route",
@@ -688,7 +692,7 @@ const BUILTIN = [
       "job": "Pass block the down lineman over you. Protect the quarterback's right side."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "route",
@@ -706,7 +710,7 @@ const BUILTIN = [
       "job": "Sprint straight up the field as fast as you can. The ball is coming to you — look back over your inside shoulder."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 430,
       "y": 400,
       "k": "route",
@@ -727,7 +731,7 @@ const BUILTIN = [
       "job": "Run flat toward the left sideline, then turn and look for the ball. You are the safe throw."
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 570,
       "y": 400,
       "k": "route",
@@ -824,10 +828,10 @@ const BUILTIN = [
   "group": "Pass Plays",
   "name": "Seam",
   "n": 2,
-  "gist": "The right end splits the middle of the field. Everybody else pulls a defender away from him.",
+  "gist": "Number 4 splits the middle of the field. Everybody else pulls a defender away from him.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "route",
@@ -899,7 +903,7 @@ const BUILTIN = [
       "job": "Pass block the down lineman over you. Protect the quarterback's right side."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 677,
       "y": 332,
       "k": "route",
@@ -921,7 +925,7 @@ const BUILTIN = [
       "job": "Run straight up the seam — the open grass between the linebacker and the safety. Ball is coming to you."
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 870,
       "y": 321,
       "k": "route",
@@ -942,7 +946,7 @@ const BUILTIN = [
       "job": "Run up, then come back in. Pull the corner away from the seam."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 791,
       "y": 338,
       "k": "route",
@@ -977,7 +981,7 @@ const BUILTIN = [
           452
         ]
       ],
-      "job": "Take the snap, drop back, and hit the right end up the middle before the safety can get over.",
+      "job": "Take the snap, drop back, and hit number 4 up the middle before the safety can get over.",
       "throw": [
         [
           500,
@@ -1042,7 +1046,7 @@ const BUILTIN = [
   "gist": "Both ends run up the field and then angle in toward the middle, crossing behind the linebackers.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 66,
       "y": 311,
       "k": "route",
@@ -1110,7 +1114,7 @@ const BUILTIN = [
       "job": "Pass block the down lineman over you. Protect the right side."
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 700,
       "y": 300,
       "k": "route",
@@ -1128,10 +1132,10 @@ const BUILTIN = [
           140
         ]
       ],
-      "job": "Run up the field, then angle in toward the middle. You cross behind the left half."
+      "job": "Run up the field, then angle in toward the middle. You cross behind number 2."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 870,
       "y": 300,
       "k": "route",
@@ -1148,7 +1152,7 @@ const BUILTIN = [
       "job": "Straight up the sideline. Take the deep man with you and get him out of the way."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 170,
       "y": 348,
       "k": "route",
@@ -1249,7 +1253,7 @@ const BUILTIN = [
   "gist": "Both ends run up and break in. Both halfbacks run straight up the seams to clear the middle out for them.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "route",
@@ -1323,7 +1327,7 @@ const BUILTIN = [
       "job": "Pass block the down lineman over you. Protect the right side."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "route",
@@ -1345,7 +1349,7 @@ const BUILTIN = [
       "job": "Run up about eight steps, then break hard to your left, toward the middle. Look for the ball right away."
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 730,
       "y": 348,
       "k": "route",
@@ -1362,7 +1366,7 @@ const BUILTIN = [
       "job": "Run straight up the field. Pull the linebacker out of the way."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 272,
       "y": 348,
       "k": "route",
@@ -1458,7 +1462,7 @@ const BUILTIN = [
   "gist": "The two players on the right cross: the inside one goes out and kicks the corner toward the sideline, the outside one comes down and hits the linebacker. The quarterback runs through the gap they make.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "block",
@@ -1519,7 +1523,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Nobody gets inside of you."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 680,
       "y": 326,
       "k": "block",
@@ -1536,7 +1540,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "block",
@@ -1553,7 +1557,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 570,
       "y": 404,
       "k": "block",
@@ -1605,7 +1609,7 @@ const BUILTIN = [
           344
         ]
       ],
-      "job": "Take the snap and sweep right. Stay behind the right half, get around the kick-out block, then turn up the field."
+      "job": "Take the snap and sweep right. Stay behind number 3, get around the kick-out block, then turn up the field."
     }
   ],
   "def": [
@@ -1660,7 +1664,7 @@ const BUILTIN = [
   "gist": "Straight up the gut. The guards take the two down linemen, the centre climbs to the middle linebacker, and both halfbacks arc out and block the outside linebackers.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "route",
@@ -1737,7 +1741,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Drive him backward and seal the gap."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "route",
@@ -1754,7 +1758,7 @@ const BUILTIN = [
       "job": "Release upfield and block the first man you see."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 430,
       "y": 404,
       "k": "block",
@@ -1779,7 +1783,7 @@ const BUILTIN = [
       "job": "Arc around to the outside, then come back in and block the linebacker on your side."
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 570,
       "y": 404,
       "k": "block",
@@ -1871,10 +1875,10 @@ const BUILTIN = [
   "group": "QB Run",
   "name": "QB Draw",
   "n": 7,
-  "gist": "It is supposed to look like a pass. The ends take off deep to pull everybody back, the line sets up like pass protection, then the quarterback runs through the middle.",
+  "gist": "It is supposed to look like a pass. Numbers 1 and 4 take off deep to pull everybody back, the line sets up like pass protection, then the quarterback runs through the middle.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "route",
@@ -1945,7 +1949,7 @@ const BUILTIN = [
       "job": "Set like pass protection, then wall your man to the outside. The hole is right behind you."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "route",
@@ -1962,7 +1966,7 @@ const BUILTIN = [
       "job": "Run straight up the field. Take your man with you."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 430,
       "y": 404,
       "k": "route",
@@ -1987,7 +1991,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 570,
       "y": 404,
       "k": "fake",
@@ -2091,7 +2095,7 @@ const BUILTIN = [
   "gist": "The quarterback rolls out to the right with the option to run it or throw it. Everybody up front blocks in that direction.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "route",
@@ -2151,7 +2155,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Do not let him cross your face."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "route",
@@ -2168,7 +2172,7 @@ const BUILTIN = [
       "job": "Straight up the sideline. Get deep and stay wide."
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 660,
       "y": 330,
       "k": "route",
@@ -2189,7 +2193,7 @@ const BUILTIN = [
       "job": "Run up and out toward the corner. Give the quarterback somewhere to throw it."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 561,
       "y": 404,
       "k": "block",
@@ -2233,7 +2237,7 @@ const BUILTIN = [
           388
         ]
       ],
-      "job": "Roll out to your right. Run it if the edge is open, throw it if the end covers you up. Keep your eyes downfield."
+      "job": "Roll out to your right. Run it if the edge is open, throw it if the outside man covers you up. Keep your eyes downfield."
     }
   ],
   "def": [
@@ -2285,10 +2289,10 @@ const BUILTIN = [
   "group": "Motion",
   "name": "Jet Sweep - Pre Snap",
   "n": 9,
-  "gist": "The right half comes across in motion before the snap. The ball goes to the left half sweeping the same way.",
+  "gist": "Number 3 comes across in motion before the snap. The ball goes to number 2 sweeping the same way.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 158,
       "y": 307,
       "k": "block",
@@ -2354,7 +2358,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Cut him off — nobody chases from behind."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 843,
       "y": 302,
       "k": "route",
@@ -2375,7 +2379,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 777,
       "y": 347,
       "k": "block",
@@ -2428,10 +2432,10 @@ const BUILTIN = [
           101
         ]
       ],
-      "job": "Take the snap and hand it to the left half going left. Then get in the way of anybody chasing."
+      "job": "Take the snap and hand it to number 2 going left. Then get in the way of anybody chasing."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 430,
       "y": 404,
       "k": "carry",
@@ -2505,11 +2509,11 @@ const BUILTIN = [
   "group": "Motion",
   "name": "Jet Sweep Left (Crack)",
   "n": 10,
-  "gist": "Misdirection. The left half motions right and keeps going as a decoy; the quarterback keeps it and runs left behind the crack block.",
+  "gist": "Misdirection. Number 2 motions right and keeps going as a decoy; the quarterback keeps it and runs left behind the crack block.",
   "flag": "This one and Jet Sweep Left look almost the same on the sheet — the difference is the blocking angle. Worth asking Coach which is which.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "block",
@@ -2569,7 +2573,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Nobody chases from behind."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 850,
       "y": 322,
       "k": "route",
@@ -2590,7 +2594,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 443,
       "y": 405,
       "k": "block",
@@ -2629,7 +2633,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 212,
       "y": 329,
       "k": "route",
@@ -2712,10 +2716,10 @@ const BUILTIN = [
   "group": "Motion",
   "name": "Jet Sweep Right",
   "n": 11,
-  "gist": "Mirror of the sweep left. The right half comes in motion the other way, and the left half takes it around the right end.",
+  "gist": "Mirror of the sweep left. Number 3 comes in motion the other way, and number 2 takes it around number 4.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "block",
@@ -2779,7 +2783,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Seal him inside."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "block",
@@ -2800,7 +2804,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 300,
       "y": 344,
       "k": "carry",
@@ -2840,7 +2844,7 @@ const BUILTIN = [
       "x": 500,
       "y": 404,
       "k": "hand",
-      "job": "Take the snap and hand it to the left half going right. Then block backside.",
+      "job": "Take the snap and hand it to number 2 going right. Then block backside.",
       "path": [
         [
           500,
@@ -2853,7 +2857,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 805,
       "y": 345,
       "k": "block",
@@ -2922,10 +2926,10 @@ const BUILTIN = [
   "group": "Motion",
   "name": "Reverse Pass",
   "n": 12,
-  "gist": "The longest motion on the sheet. The right end runs all the way across the formation and takes the pitch going left, while the left half fakes hard to the right.",
+  "gist": "The longest motion on the sheet. Number 4 runs all the way across the formation and takes the pitch going left, while number 2 fakes hard to the right.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "carry",
@@ -3003,7 +3007,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Nobody crosses behind you."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 861,
       "y": 300,
       "k": "route",
@@ -3037,7 +3041,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 207,
       "y": 335,
       "k": "route",
@@ -3058,7 +3062,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 803,
       "y": 334,
       "k": "route",
@@ -3146,10 +3150,10 @@ const BUILTIN = [
   "group": "Power Run",
   "name": "Power Right",
   "n": 13,
-  "gist": "The left guard pulls all the way around to the right and leads through the hole. The wing kicks the corner out, and the right end releases to the safety.",
+  "gist": "The left guard pulls all the way around to the right and leads through the hole. Number 2 kicks the corner out, and number 4 releases to the safety.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "block",
@@ -3236,7 +3240,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Get movement."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 438,
       "y": 400,
       "k": "carry",
@@ -3270,7 +3274,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "block",
@@ -3301,10 +3305,10 @@ const BUILTIN = [
           375
         ]
       ],
-      "job": "Take the snap and hand it to the right half. Then carry out your fake to the left."
+      "job": "Take the snap and hand it to number 3. Then carry out your fake to the left."
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 627,
       "y": 331,
       "k": "block",
@@ -3372,7 +3376,7 @@ const BUILTIN = [
   "gist": "The cross block. The inside man goes out and kicks the corner toward the sideline; the outside man comes down and cracks the linebacker. This is the cleanest play on the sheet.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "block",
@@ -3442,7 +3446,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Get your helmet across him."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 664,
       "y": 338,
       "k": "block",
@@ -3460,7 +3464,7 @@ const BUILTIN = [
       "job": "Run at the corner and drive him toward the sideline. This is the kick-out block — the whole play needs it."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "block",
@@ -3491,10 +3495,10 @@ const BUILTIN = [
           412
         ]
       ],
-      "job": "Take the snap and hand it to the right half, then fake left."
+      "job": "Take the snap and hand it to number 3, then fake left."
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 570,
       "y": 412,
       "k": "carry",
@@ -3568,10 +3572,10 @@ const BUILTIN = [
   "group": "Power Run",
   "name": "Counter Right",
   "n": 15,
-  "gist": "One step the wrong way, then back. The right half takes a jab step left before cutting hard right — it freezes the linebackers for just long enough.",
+  "gist": "One step the wrong way, then back. Number 3 takes a jab step left before cutting hard right — it freezes the linebackers for just long enough.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "route",
@@ -3645,7 +3649,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you. Get movement to your right."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 860,
       "y": 300,
       "k": "block",
@@ -3663,7 +3667,7 @@ const BUILTIN = [
       "job": "Come down inside and wall off the linebacker. He must not get to the hole."
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 447,
       "y": 412,
       "k": "carry",
@@ -3697,7 +3701,7 @@ const BUILTIN = [
       "x": 499,
       "y": 404,
       "k": "hand",
-      "job": "Take the snap and hand it to the right half after his jab step. Sell the fake left.",
+      "job": "Take the snap and hand it to number 3 after his jab step. Sell the fake left.",
       "path": [
         [
           499,
@@ -3710,7 +3714,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 549,
       "y": 411,
       "k": "route",
@@ -3790,10 +3794,10 @@ const BUILTIN = [
   "name": "Reverse",
   "n": 16,
   "coachLabel": "reverse",
-  "gist": "The right end motions left to pull the defense that way. The ball ends up with the left half running all the way back to the right.",
+  "gist": "Number 4 motions left to pull the defense that way. The ball ends up with number 2 running all the way back to the right.",
   "men": [
     {
-      "p": "LE",
+      "p": "1",
       "x": 150,
       "y": 300,
       "k": "route",
@@ -3814,7 +3818,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "LH",
+      "p": "2",
       "x": 211,
       "y": 338,
       "k": "carry",
@@ -3901,7 +3905,7 @@ const BUILTIN = [
       "job": "Block the down lineman over you and hold your block a long time."
     },
     {
-      "p": "RE",
+      "p": "4",
       "x": 864,
       "y": 328,
       "k": "route",
@@ -3926,7 +3930,7 @@ const BUILTIN = [
       "x": 500,
       "y": 404,
       "k": "block",
-      "job": "Take the snap, fake left, then hand it to the left half coming back the other way. Then get upfield and block.",
+      "job": "Take the snap, fake left, then hand it to number 2 coming back the other way. Then get upfield and block.",
       "path": [
         [
           500,
@@ -3947,7 +3951,7 @@ const BUILTIN = [
       ]
     },
     {
-      "p": "RH",
+      "p": "3",
       "x": 807,
       "y": 352,
       "k": "route",
@@ -4046,7 +4050,7 @@ let bookIsStale = false;   // a newer playbook shipped than the one on this devi
 
 /* Bumped by scripts/bake.mjs every time a verified playbook is baked in.
    A device holding an older one gets offered the update. */
-const BUILTIN_VERSION = 6;
+const BUILTIN_VERSION = 8;
 
 /* The throw used to belong to the play. It belongs to whoever throws it, so
    that it edits like every other line. Old playbooks get moved across here. */
@@ -4086,7 +4090,9 @@ loadBook();
    right end used to do. Left and right in the written jobs swap to match.
    ============================================================ */
 
-const FLIP_POS = { LE:"RE", RE:"LE", LG:"RG", RG:"LG", LH:"RH", RH:"LH" };
+/* Flipping mirrors the numbers with the field, so 1 is always the outside man
+   on the left and the call "…left, 3" always points at the same spot. */
+const FLIP_POS = { "1":"4", "4":"1", "2":"3", "3":"2", LG:"RG", RG:"LG" };
 const FLIP_DEF = { T1:"T2", T2:"T1", W:"S", S:"W", CL:"CR", CR:"CL" };
 const mirrorX = x => 1000 - x;
 
@@ -4813,7 +4819,7 @@ function paintJobs() {
   const shown = view();
   const men = selected ? shown.men.filter(m => m.p === selected) : shown.men.slice();
   if (!selected) {
-    const seq = ["QB","LH","RH","C","LG","RG","LE","RE"];
+    const seq = ["QB","1","2","3","4","C","LG","RG"];
     const rank = p => { const i = seq.indexOf(p); return i < 0 ? 99 : i; };
     men.sort((a, b) => rank(a.p) - rank(b.p));
   }
