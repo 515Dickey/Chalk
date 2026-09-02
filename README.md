@@ -58,6 +58,21 @@ that has drifted is never stuck on an old copy.
 If the JSON is somewhere else — pasted out of another device's backup box, say
 — `node scripts/bake.mjs playbook.json` does the same thing from the terminal.
 
+### Away from the machine with the source
+
+Open the live site anywhere — the office, a phone — edit as normal, then
+**Copy just my changes** in the same panel. Only the plays you touched travel,
+which keeps it a couple of kilobytes rather than the whole book. Paste that
+wherever you can get it back to this repo and:
+
+```
+node scripts/merge.mjs changes.json      # or pipe it in
+```
+
+A changed play replaces the one with its id, an unknown id is added, deleted
+ids are dropped, the plays are renumbered, and the whole book is put through
+the same checks a full save gets. Then commit and push.
+
 Both paths refuse a playbook with a missing id, name, player or coordinate, or
 with two plays sharing an id, rather than shipping something broken.
 

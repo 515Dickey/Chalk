@@ -5992,6 +5992,41 @@ function paintEditor() {
   ta.value = JSON.stringify({ v: 2, plays: PLAYS });
   det.appendChild(ta);
 
+  /* Away from the machine that has the source? Send just what you touched.
+     The whole book is tens of kilobytes and grows; a few edited plays is a
+     couple, small enough to paste into a message. */
+  const diffRow = document.createElement("div");
+  diffRow.className = "edtypes";
+  const diffNote = document.createElement("p");
+  diffNote.className = "edhint";
+  const changes = () => {
+    const base = {};
+    BUILTIN.forEach(b => { base[b.id] = JSON.stringify(freshPlay(b)); });
+    const changed = PLAYS.filter(p => base[p.id] !== JSON.stringify(p));
+    const deleted = BUILTIN.map(b => b.id).filter(id => !PLAYS.some(p => p.id === id));
+    return { v: 2, basedOn: BUILTIN_VERSION, changed, deleted };
+  };
+  const c0 = changes();
+  diffNote.textContent = (c0.changed.length || c0.deleted.length)
+    ? `${c0.changed.length} play${c0.changed.length === 1 ? "" : "s"} changed`
+      + (c0.deleted.length ? `, ${c0.deleted.length} deleted` : "")
+      + " since this version was built."
+    : "Nothing has changed since this version was built.";
+  diffRow.appendChild(mkBtn("Copy just my changes", async () => {
+    const c = changes();
+    const text = JSON.stringify(c);
+    ta.value = text;
+    ta.select();
+    const size = (text.length / 1024).toFixed(1);
+    try {
+      await navigator.clipboard.writeText(text);
+      diffNote.textContent = `Copied ${c.changed.length} changed play(s), ${size} KB. Paste it to Claude and it can be merged in and published.`;
+    } catch (e) {
+      diffNote.textContent = `${size} KB, selected in the box — use your device's copy.`;
+    }
+  }));
+  det.append(diffRow, diffNote);
+
   const brow = document.createElement("div");
   brow.className = "edtypes";
   brow.appendChild(mkBtn("Copy", async () => {
