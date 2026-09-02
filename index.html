@@ -4824,6 +4824,7 @@ function paintJobs() {
     b.dataset.ball = m.ball ? "1" : "0";
     b.setAttribute("aria-pressed", String(selected === m.p));
     const roleWord = m.ball ? "Has the ball"
+      : m.throw ? "Throws it"
       : m.k === "block" ? "Block"
       : m.k === "route" ? "Route"
       : m.k === "carry" ? "Runs it"
